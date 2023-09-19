@@ -4,7 +4,7 @@ const apiPath = import.meta.env.VITE_API_PATH
 const resource = apiPath + "/events"
 // const resource = apiPath + "/noauth-events"
 
-export const allEvents = () => http.get(resource)
+export const allEvents = params => http.get(`${resource}/${params}`)
 
 export const createEvent = event => http.post(resource, event)
 

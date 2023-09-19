@@ -32,8 +32,8 @@ export const useEventStore = defineStore("eventStore", () => {
     const inactiveEvents = computed(() =>
       events.value.filter((event) => event.is_active)
     );
-    const fetchAllEvents = async () => {
-      const { data } = await allEvents();
+    const fetchAllEvents = async (params) => {
+      const { data } = await allEvents(params);
       events.value = data.data;
     };
     return {

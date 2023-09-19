@@ -42,16 +42,24 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>Product Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
+                            <th @click="handleSort('name')" :class="[(orderColumn === 'name')? sortTypeClass : '', 'sort-control']">TITLE</th>
+                            <th @click="handleSort('event_start_date_time')" :class="[(orderColumn === 'event_start_date_time')? sortTypeClass : '', 'sort-control']">START DATETIME</th>
+                            <th @click="handleSort('event_end_date_time')" :class="[(orderColumn === 'event_end_date_time')? sortTypeClass : '', 'sort-control']">END DATETIME</th>
+                            <th @click="handleSort('location')" :class="[(orderColumn === 'location')? sortTypeClass : '', 'sort-control']">LOCATION</th>
+                            <th @click="handleSort('event_category')" :class="[(orderColumn === 'event_category')? sortTypeClass : '', 'sort-control']">EVENT CATEGORY</th>
+                            <th @click="handleSort('is_active')" :class="[(orderColumn === 'is_active')? sortTypeClass : '', 'sort-control']">STATUS</th>
+                            <th>ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>3</td>
+                        <tr v-for="event in events" :key="event.id">
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.event_start_date_time }}</td>
+                            <td>{{ event.event_end_date_time }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>{{ event.event_category }}</td>
+                            <td>{{ event.is_active }}</td>
+                            <td>{{ event.id }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -79,6 +87,15 @@
     background-color: white  !important;
     border-color: black  !important;
 }
+.sort-control {
+    cursor: pointer;
+}
+.ascending:after {
+    content: "\25b2";
+}
+.descending:after {
+    content: "\25bc";
+}
 </style>
 <script setup>
 import { onMounted, computed, ref } from "vue";
@@ -87,11 +104,38 @@ import { useEventStore } from "../stores/event";
 const store = useEventStore()
 const { fetchAllEvents } = store
 
+const events = ref([])
+const orderDir = ref(1)
+const orderColumn = ref('name')
+const orderClass = ref('sort-control')
+const sortTypeClass = ref('descending')
+const sortType = ref('DESC')
+
 
 onMounted(async () => {
-    await fetchAllEvents()
-    console.log(store.events)
-    console.log(store.activeEvents)
-    console.log(store.events)
+    let params = `?page=1`
+    params = params + `&per_page=10`
+    params = params + `&sort_by=`+sortType.value
+    params = params + `&sort_field_name=`+orderColumn.value
+    events.value = null
+    await fetchAllEvents(params)
+    events.value = store.events
 })
+
+
+const handleSort = async (column) => {
+    orderDir.value = orderDir.value * -1;
+    orderColumn.value = column;
+    orderClass.value = 'sort-control '+sortType.value;
+    sortTypeClass.value =  (orderDir.value === 1) ? 'ascending' : 'descending'
+    sortType.value =  (orderDir.value === 1) ? 'ASC' : 'DESC'
+    
+    let params = `?page=1`
+    params = params + `&per_page=10`
+    params = params + `&sort_by=`+sortType.value
+    params = params + `&sort_field_name=`+orderColumn.value
+    events.value = null
+    await fetchAllEvents(params)
+    events.value = store.events
+}
 </script>
