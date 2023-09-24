@@ -26,22 +26,29 @@ import { allEvents } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([]);
-  const activeEvents = computed(() =>
-      events.value.filter((event) => !event.is_active)
-    );
-    const inactiveEvents = computed(() =>
-      events.value.filter((event) => event.is_active)
-    );
-    const fetchAllEvents = async (params) => {
-      const { data } = await allEvents(params);
-      events.value = data.data;
-    };
-    return {
-      events,
-      activeEvents,
-      inactiveEvents,
-      fetchAllEvents,
-    };
+  const currentPage = ref(1);
+  const startPage = ref(1);
+  const endPage = ref(1);
+  const totalRecord = ref(1);
+  const pages = ref([])
+  const fetchAllEvents = async (params) => {
+    const { data } = await allEvents(params);
+    events.value = data.data;
+    currentPage.value = data.meta.current_page;
+    endPage.value = data.meta.last_page;
+    totalRecord.value = data.meta.total;
+
+    
+  };
+  return {
+    events,
+    pages,
+    currentPage,
+    startPage,
+    endPage,
+    totalRecord,
+    fetchAllEvents,
+  };
 },
 {
   persist: true,
