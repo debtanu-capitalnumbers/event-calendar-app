@@ -1,5 +1,7 @@
 import EventsPage from "../pages/EventsPage.vue"
 import LoginPage from "../pages/LoginPage.vue"
+import ResetPasswordPage from "../pages/ResetPasswordPage.vue"
+import ForgotPasswordPage from "../pages/ForgotPasswordPage.vue"
 import RegisterPage from "../pages/RegisterPage.vue"
 import CalendarPage from "../pages/CalendarPage.vue"
 import HomePage from "../pages/HomePage.vue"
@@ -27,6 +29,24 @@ const routes = [
         path: "/login",
         component: LoginPage,
         name: 'login',
+        meta: {
+            guest: true,
+        }
+    },
+    {
+        path: "/reset-password/:token",
+        component: ResetPasswordPage,
+        name: 'reset-password',
+        // handle these as props
+        props: true,
+        meta: {
+            guest: true,
+        }
+    },
+    {
+        path: "/forgot-password",
+        component: ForgotPasswordPage,
+        name: 'forgot-password',
         meta: {
             guest: true,
         }

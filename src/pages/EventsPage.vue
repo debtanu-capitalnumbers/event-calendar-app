@@ -126,7 +126,7 @@ const pages = ref([])
 const startPageLink = ref(1)
 const endPageLink = ref(1)
 const orderDir = ref(1)
-const perPage = ref(1)
+const perPage = ref(10)
 const currentPage = ref(1)
 const nowCurrentPage = ref(1)
 const startPage = ref(1)
@@ -165,10 +165,22 @@ const isLastPage = computed(
     () => (endPage.value === currentPage.value) ? true : false
 )
 const startingShowingRecord  = computed(
-    () => (( currentPage.value -1 ) * perPage.value) + 1
+    () => {
+        if(((( currentPage.value -1 ) * perPage.value) + 1) <= totalRecord.value){
+            return (( currentPage.value -1 ) * perPage.value) + 1
+        } else {
+            return 0;
+        }
+    }
 )
 const endingShowingRecord = computed(
-    () => currentPage.value * perPage.value
+    () => {
+        if((currentPage.value * perPage.value) <= totalRecord.value){
+            return currentPage.value * perPage.value
+        } else {
+            return 0;
+        }
+    }
 )
 
 onMounted(async () => {
@@ -248,7 +260,9 @@ const paginationPages = () => {
           pages.value.push(index)
         }
     }
-    pages.value.push(endPage.value) 
+    if(startPage.value !== endPage.value){
+        pages.value.push(endPage.value)
+    }
     nowCurrentPage.value = currentPage.value
 }
 
@@ -259,17 +273,14 @@ const switchPage = (page) => {
 const prev = () => {
     if(startPage.value < currentPage.value){
         currentPage.value--
-        // return handleSearch
-    const setNewSearch = handleSearch()
+        const setNewSearch = handleSearch()
     }
-    console.log(currentPage.value);
 }
 const next = () => {
     console.log(currentPage.value);
     if(endPage.value > currentPage.value){
         currentPage.value++
-        // return handleSearch
-    const setNewSearch = handleSearch()
+        const setNewSearch = handleSearch()
     }
 }
 

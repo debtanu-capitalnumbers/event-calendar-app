@@ -7,10 +7,10 @@
         </h1>
         <h2 class="h3 mb-4 fw-normal">Please sign up</h2>
         <div class="form-floating mb-2">
-            <input type="text" class="form-control" :class="{ 'is-invalid': errors.name && errors.name[0] }" id="name" v-model="form.name" placeholder="Your name" />
-            <label for="name">Name</label>
-            <div class="invalid-feedback" v-if="errors.name && errors.name[0]">
-                {{ errors.name && errors.name[0] }}
+            <input type="text" class="form-control" :class="{ 'is-invalid': errors.username && errors.username[0] }" id="username" v-model="form.username" placeholder="Your name" />
+            <label for="username">Username</label>
+            <div class="invalid-feedback" v-if="errors.username && errors.username[0]">
+                {{ errors.username && errors.username[0] }}
             </div>
         </div>
         <div class="form-floating mb-2">
@@ -32,12 +32,17 @@
                 placeholder="Password Confirmation" />
             <label for="password_confirmation">Password Confirmation</label>
         </div>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Register</button>
+        <div class="form-floating mb-3">
+            <span>
+                <a href="#" @click.prevent="$event => $router.push('/login')">Already have an account? Login</a>
+            </span>
+        </div>
     </form>
 </main>
 </template>
 <script setup>
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
@@ -46,29 +51,21 @@ const store = useAuthStore()
 const { isLoggedIn, errors } = storeToRefs(store)
 const { handleRegister } = store
 const form = reactive({
-name: '',
+username: '',
 email: '',
 password: '',
 password_confirmation: ''
 })
+
+onMounted(async () => {
+    errors.value = ''
+})
+
 const handleSubmit = async () => {
-await handleRegister(form)
-if (isLoggedIn.value) {
-    router.push({ name: 'tasks' })
-}
+    errors.value = ''
+    await handleRegister(form)
+    if (isLoggedIn.value) {
+        router.push({ name: 'events' })
+    }
 }
 </script>
-<style scoped>
-.auth-wrapper {
-width: 100%;
-display: flex;
-justify-content: center;
-align-items: center;
-text-align: center;
-min-height: 60vh;
-margin-top: 2rem;
-}
-.auth-form {
-width: 400px;
-}
-</style>
