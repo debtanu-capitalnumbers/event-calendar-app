@@ -77,7 +77,36 @@
         </div>
     </div>
 </template>
-
+<style scoped>
+ .dropdown-text {
+    background-color: white;
+    padding-right: 10%;
+    border: none;
+}
+.btnhvr:hover {
+    color: black  !important;
+    background-color: white  !important;
+    border-color: black  !important;
+}
+.sort-control {
+    cursor: pointer;
+}
+.ascending:after {
+    content: "\25b2";
+}
+.descending:after {
+    content: "\25bc";
+}
+.dropdown-item {
+    cursor: pointer;
+}
+.page-link:focus{
+    box-shadow: none !important;
+}
+.page-link:hover{
+    background-color: white !important;
+}
+</style>
 <script setup>
 import { onMounted, computed, ref } from "vue";
 import { storeToRefs } from 'pinia';
@@ -85,7 +114,7 @@ import { useEventStore } from "../../stores/event";
 
 const store = useEventStore()
 const { fetchAllEvents } = store
-const { startPage, currentPage, endPage, orderDir, perPage, filterName, orderColumn, sortType, totalRecord } = storeToRefs(store)
+const { startPage, currentPage, lastPage, perPage, filterName, orderColumn, orderDir, sortType, totalRecord } = storeToRefs(store)
 defineProps({
     events: Array,
     show: {
@@ -98,34 +127,32 @@ const pages = ref([])
 const startPageLink = ref(1)
 const endPageLink = ref(1)
 const nowCurrentPage = ref(1)
-const orderClass = ref('sort-control')
-
 const computeWhenSearching = computed(
     () => filterName.value.length > 2
 )
 const computeSortTypeClassForName = computed(
-    () => (orderColumn.value === 'name') ? ((orderDir.value === 1) ?'ascending' : 'descending') : ''
+    () => (orderColumn.value === 'name') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
 )
 const computeSortTypeClassForStartDate = computed(
-    () => (orderColumn.value === 'event_start_date_time') ? ((orderDir.value === 1) ?'ascending' : 'descending') : ''
+    () => (orderColumn.value === 'event_start_date_time') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
 )
 const computeSortTypeClassForEndDate = computed(
-    () => (orderColumn.value === 'event_end_date_time') ? ((orderDir.value === 1) ?'ascending' : 'descending') : ''
+    () => (orderColumn.value === 'event_end_date_time') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
 )
 const computeSortTypeClassForLocation = computed(
-    () => (orderColumn.value === 'location') ? ((orderDir.value === 1) ?'ascending' : 'descending') : ''
+    () => (orderColumn.value === 'location') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
 )
 const computeSortTypeClassForCategory = computed(
-    () => (orderColumn.value === 'event_category') ? ((orderDir.value === 1) ?'ascending' : 'descending') : ''
+    () => (orderColumn.value === 'event_category') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
 )
 const computeSortTypeClassForStatus = computed(
-    () => (orderColumn.value === 'is_active') ? ((orderDir.value === 1) ?'ascending' : 'descending') : ''
+    () => (orderColumn.value === 'is_active') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
 )
 const isFirstPage = computed(
     () => (startPage.value === currentPage.value) ? true : false
 )
 const isLastPage = computed(
-    () => (endPage.value === currentPage.value) ? true : false
+    () => (lastPage.value === currentPage.value) ? true : false
 )
 const startingShowingRecord  = computed(
     () => {
@@ -163,37 +190,22 @@ onMounted(async () => {
 
 const handleSort = async (column) => {
     orderDir.value = orderDir.value * -1
+    sortType.value = (orderDir.value === 1) ?'DESC' : 'ASC'
     orderColumn.value = column
-    orderClass.value = 'sort-control '+sortType.value
     
-    let params = `?page=`+currentPage.value
-    params = params + `&per_page=`+perPage.value
-    params = params + `&sort_by=`+sortType.value
-    params = params + `&sort_field_name=`+orderColumn.value
-    params = params + `&search=`+filterName.value
-    await fetchAllEvents(params)
+    await fetchAllEvents()
     const setPageLink = paginationPages()
 }
 
 const handleSearch = async () => {    
-    let params = `?page=`+currentPage.value
-    params = params + `&per_page=`+perPage.value
-    params = params + `&sort_by=`+sortType.value
-    params = params + `&sort_field_name=`+orderColumn.value
-    params = params + `&search=`+filterName.value
-    await fetchAllEvents(params)
+    await fetchAllEvents()
     const setPageLink = paginationPages()
 }
 
 const handlePerPage = async (perpage) => {    
     perPage.value = perpage
     currentPage.value = 1
-    let params = `?page=`+currentPage.value
-    params = params + `&per_page=`+perPage.value
-    params = params + `&sort_by=`+sortType.value
-    params = params + `&sort_field_name=`+orderColumn.value
-    params = params + `&search=`+filterName.value
-    await fetchAllEvents(params)
+    await fetchAllEvents()
     const setPageLink = paginationPages()
 }
 
@@ -206,26 +218,26 @@ const handleActive = async (status, id) => {
 const paginationPages = () => { 
     pages.value.length = 0;
     pages.value.push(startPage.value)
-    if( ((currentPage.value - 1) > (startPage.value + 2)) && endPage.value > 5){   
+    if( ((currentPage.value - 1) > (startPage.value + 2)) && lastPage.value > 5){   
       pages.value.push('...')  
-      startPageLink.value = ((currentPage.value - 1) < (endPage.value - 4)) ? (currentPage.value - 1) : (endPage.value - 4);
+      startPageLink.value = ((currentPage.value - 1) < (lastPage.value - 4)) ? (currentPage.value - 1) : (lastPage.value - 4);
     } else {
         startPageLink.value = startPage.value+1;
     }
-    if( ((currentPage.value + 1) < (endPage.value - 2)) && endPage.value > 5){  
+    if( ((currentPage.value + 1) < (lastPage.value - 2)) && lastPage.value > 5){  
         endPageLink.value = ((currentPage.value + 1) > (startPage.value + 4)) ? (currentPage.value + 1) : (startPage.value + 4);
         for (let index = startPageLink.value; index <= endPageLink.value; index++) {
           pages.value.push(index)
         }
         pages.value.push('...')
     } else { 
-        endPageLink.value = endPage.value - 1;
+        endPageLink.value = lastPage.value - 1;
         for (let index = startPageLink.value; index <= endPageLink.value; index++) {
           pages.value.push(index)
         }
     }
-    if(startPage.value !== endPage.value){
-        pages.value.push(endPage.value)
+    if(startPage.value !== lastPage.value){
+        pages.value.push(lastPage.value)
     }
     nowCurrentPage.value = currentPage.value
 }
@@ -241,7 +253,7 @@ const prev = () => {
     }
 }
 const next = () => {
-    if(endPage.value > currentPage.value){
+    if(lastPage.value > currentPage.value){
         currentPage.value++
         const setNewSearch = handleSearch()
     }

@@ -15,36 +15,7 @@
         <EventList  :events="events"/>
     </div>
 </template>
-<style scoped>
- .dropdown-text {
-    background-color: white;
-    padding-right: 10%;
-    border: none;
-}
-.btnhvr:hover {
-    color: black  !important;
-    background-color: white  !important;
-    border-color: black  !important;
-}
-.sort-control {
-    cursor: pointer;
-}
-.ascending:after {
-    content: "\25b2";
-}
-.descending:after {
-    content: "\25bc";
-}
-.dropdown-item {
-    cursor: pointer;
-}
-.page-link:focus{
-    box-shadow: none !important;
-}
-.page-link:hover{
-    background-color: white !important;
-}
-</style>
+
 <script setup>
 import { onMounted } from "vue";
 import { storeToRefs } from 'pinia';

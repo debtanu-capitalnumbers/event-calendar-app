@@ -13,7 +13,7 @@ export const useAuthStore = defineStore("authStore", () => {
   
     const fetchUser = async () => {
         try {
-            const { data } = await getUser(token);
+            const { data } = await getUser();
             user.value = data;       
         } catch (error) {
             status.value = error.response.status;
@@ -102,9 +102,9 @@ export const useAuthStore = defineStore("authStore", () => {
     const handleLogout = async () => {
         await logout();
         user.value = null;
-        localStorage.removeItem('token'); 
-        // localStorage.removeItem('isLoggedIn');        
-        // localStorage.removeItem('userData');     
+        token.value = null;
+        localStorage.removeItem('token');     
+        localStorage.removeItem('eventStore');        
     };
 
     return {
