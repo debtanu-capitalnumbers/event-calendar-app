@@ -25,19 +25,23 @@ import { allEvents } from "../http/event-api";
 
 
 export const useEventStore = defineStore("eventStore", () => {
-  const events = ref([]);
-  const currentPage = ref(1);
-  const startPage = ref(1);
-  const endPage = ref(1);
-  const totalRecord = ref(1);
+  const events = ref([])
+  const currentPage = ref(1)
+  const startPage = ref(1)
+  const endPage = ref(1)
+  const totalRecord = ref(1)
   const pages = ref([])
+  const orderDir = ref(1)
+  const perPage = ref(10)
+  const filterName = ref('')
+  const orderColumn = ref('name')
+  const sortType = ref('DESC')
   const fetchAllEvents = async (params) => {
     const { data } = await allEvents(params);
     events.value = data.data;
     currentPage.value = data.meta.current_page;
     endPage.value = data.meta.last_page;
     totalRecord.value = data.meta.total;
-
     
   };
   return {
@@ -46,6 +50,11 @@ export const useEventStore = defineStore("eventStore", () => {
     currentPage,
     startPage,
     endPage,
+    perPage,
+    orderDir,
+    filterName,
+    orderColumn,
+    sortType,
     totalRecord,
     fetchAllEvents,
   };

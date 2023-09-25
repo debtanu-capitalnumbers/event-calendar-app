@@ -1,4 +1,5 @@
 import EventsPage from "../pages/EventsPage.vue"
+import CreateEventPage from "../pages/CreateEventPage.vue"
 import LoginPage from "../pages/LoginPage.vue"
 import ResetPasswordPage from "../pages/ResetPasswordPage.vue"
 import ForgotPasswordPage from "../pages/ForgotPasswordPage.vue"
@@ -21,6 +22,14 @@ const routes = [
         path: "/events",
         component: EventsPage,
         name: 'events',
+        meta: {
+            auth: true,
+        }
+    },
+    {
+        path: "/create-event",
+        component: CreateEventPage,
+        name: 'createevent',
         meta: {
             auth: true,
         }
