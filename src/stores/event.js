@@ -4,6 +4,7 @@ import { allEvents, activeEvent } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
+  const errors = ref({});
   const currentPage = ref(1)
   const startPage = ref(1)
   const lastPage = ref(1)
@@ -11,7 +12,7 @@ export const useEventStore = defineStore("eventStore", () => {
   const pages = ref([])
   const perPage = ref(10)
   const filterName = ref('')
-  const orderColumn = ref('name')
+  const orderColumn = ref('title')
   const orderDir = ref(1)
   const sortType = ref('DESC')
   const startPageLink = ref(1)
@@ -19,14 +20,22 @@ export const useEventStore = defineStore("eventStore", () => {
   const nowCurrentPage = ref(1)
   const isApiCallComplete = ref(false)
 
-  const fetchAllEvents = async () => {
+  const fetchAllEvents = async (type) => {
     isApiCallComplete.value = false;
-    
-    let setParams = `?page=`+currentPage.value
-    setParams = setParams + `&per_page=`+perPage.value
-    setParams = setParams + `&sort_by=`+sortType.value
-    setParams = setParams + `&sort_field_name=`+orderColumn.value
-    setParams = setParams + `&search=`+filterName.value
+    let setParams = '?'
+    if(type !== 'fresh'){
+      setParams = setParams + `page=`+currentPage.value
+      setParams = setParams + `&per_page=`+perPage.value
+      setParams = setParams + `&sort_by=`+sortType.value
+      setParams = setParams + `&sort_field_name=`+orderColumn.value
+      setParams = setParams + `&search=`+filterName.value
+    } else {
+      currentPage.value = 1
+      perPage.value = 10
+      sortType.value = 'DESC'
+      orderColumn.value = 'title'
+      filterName.value = ''
+    }
     const { data} = await allEvents(setParams)
     isApiCallComplete.value = true;
     events.value = data.data;
@@ -80,19 +89,19 @@ export const useEventStore = defineStore("eventStore", () => {
     sortType.value = (orderDir.value === 1) ?'DESC' : 'ASC'
     orderColumn.value = column
     
-    fetchAllEvents()
+    fetchAllEvents('')
     paginationPages()
   }
 
   const handleSearch = () => {    
-      fetchAllEvents()
+      fetchAllEvents('')
       paginationPages()
   }
 
   const handlePerPage = (perpage) => {    
       perPage.value = perpage
       currentPage.value = 1
-      fetchAllEvents()
+      fetchAllEvents('')
       paginationPages()
   }
 
@@ -124,6 +133,7 @@ export const useEventStore = defineStore("eventStore", () => {
 
 
   return {
+    errors,
     isApiCallComplete,
     events,
     pages,

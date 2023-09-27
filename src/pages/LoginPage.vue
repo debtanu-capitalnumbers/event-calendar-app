@@ -30,26 +30,26 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, computed } from "vue";
-import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
-import { useAuthStore } from "../stores/auth";
+    import { onMounted, reactive, computed } from "vue";
+    import { storeToRefs } from "pinia";
+    import { useRouter } from "vue-router";
+    import { useAuthStore } from "../stores/auth";
 
-const router = useRouter()
-const store = useAuthStore()
-const { errors } = storeToRefs(store)
-const { handleLogin } = store
+    const router = useRouter()
+    const store = useAuthStore()
+    const { errors } = storeToRefs(store)
+    const { handleLogin } = store
 
-const form = reactive({
-    username: '',
-    password: '' 
-})
-onMounted(async () => {
-    errors.value = ''
-})
-const handleSubmit = async () => {
-    errors.value = ''
-    await handleLogin(form)
-    router.push({ name: 'events' })
-}
+    const form = reactive({
+        username: '',
+        password: '' 
+    })
+    onMounted(async () => {
+        errors.value = ''
+    })
+    const handleSubmit = async () => {
+        errors.value = ''
+        await handleLogin(form)
+        router.push({ name: 'events' })
+    }
 </script>

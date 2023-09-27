@@ -51,10 +51,10 @@ const store = useAuthStore()
 const { isLoggedIn, errors } = storeToRefs(store)
 const { handleRegister } = store
 const form = reactive({
-username: '',
-email: '',
-password: '',
-password_confirmation: ''
+    username: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
 })
 
 onMounted(async () => {

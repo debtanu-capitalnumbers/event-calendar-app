@@ -40,10 +40,6 @@ const store = useEventStore()
 const { handleActiveEvent } = store
 
 defineProps({
-    events: Array,
-    show: {
-        type: Boolean,
-        default: true
-    }
+    events: Array
 })
 </script>

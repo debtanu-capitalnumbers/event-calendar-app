@@ -1,6 +1,6 @@
 <template>
     <tr>
-        <th @click="handleSort('name')" :class="[computeSortTypeClassForName, 'sort-control']">TITLE</th>
+        <th @click="handleSort('title')" :class="[computeSortTypeClassForTitle, 'sort-control']">TITLE</th>
         <th @click="handleSort('event_start_date_time')" :class="[computeSortTypeClassForStartDate, 'sort-control']">START DATETIME</th>
         <th @click="handleSort('event_end_date_time')" :class="[computeSortTypeClassForEndDate, 'sort-control']">END DATETIME</th>
         <th @click="handleSort('location')" :class="[computeSortTypeClassForLocation, 'sort-control']">LOCATION</th>
@@ -26,10 +26,11 @@
     import { useEventStore } from "../../../stores/event";
 
     const store = useEventStore()
+    const { handleSort } = store
     const { orderColumn, orderDir } = storeToRefs(store)
 
-    const computeSortTypeClassForName = computed(
-        () => (orderColumn.value === 'name') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
+    const computeSortTypeClassForTitle = computed(
+        () => (orderColumn.value === 'title') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''
     )
     const computeSortTypeClassForStartDate = computed(
         () => (orderColumn.value === 'event_start_date_time') ? ((orderDir.value === 1) ?'descending' : 'ascending') : ''

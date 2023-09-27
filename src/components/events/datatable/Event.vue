@@ -1,6 +1,6 @@
 <template>    
     <tr>
-        <td>{{ event.name }}</td>
+        <td>{{ event.title }}</td>
         <td>{{ event.event_start_date_time }}</td>
         <td>{{ event.event_end_date_time }}</td>
         <td>{{ event.location }}</td>

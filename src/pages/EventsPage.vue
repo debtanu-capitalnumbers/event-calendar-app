@@ -17,11 +17,6 @@ const { fetchAllEvents } = store
 const { events, sortType, perPage, currentPage, orderColumn, filterName } = storeToRefs(store)
 
 onMounted(async () => {
-    let params = `?page=`+currentPage.value
-    params = params + `&per_page=`+perPage.value
-    params = params + `&sort_by=`+sortType.value
-    params = params + `&sort_field_name=`+orderColumn.value
-    params = params + `&search=`+filterName.value
-    await fetchAllEvents(params)
+    await fetchAllEvents('fresh')
 })
 </script>
