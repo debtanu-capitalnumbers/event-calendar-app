@@ -1,6 +1,6 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { allEvents, activeEvent } from "../http/event-api";
+import { allEvents, activeEvent, removeEvent } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
@@ -10,7 +10,7 @@ export const useEventStore = defineStore("eventStore", () => {
   const lastPage = ref(1)
   const totalRecord = ref(1)
   const pages = ref([])
-  const perPage = ref(10)
+  const perPage = ref(2)
   const filterName = ref('')
   const orderColumn = ref('title')
   const orderDir = ref(1)
@@ -19,9 +19,10 @@ export const useEventStore = defineStore("eventStore", () => {
   const endPageLink = ref(1)
   const nowCurrentPage = ref(1)
   const isApiCallComplete = ref(false)
+  const isShowLoader = ref(false)
 
   const fetchAllEvents = async (type) => {
-    isApiCallComplete.value = false;
+    isShowLoader.value = true;
     let setParams = '?'
     if(type !== 'fresh'){
       setParams = setParams + `page=`+currentPage.value
@@ -37,24 +38,31 @@ export const useEventStore = defineStore("eventStore", () => {
       filterName.value = ''
     }
     const { data} = await allEvents(setParams)
-    isApiCallComplete.value = true;
     events.value = data.data;
     currentPage.value = data.meta.current_page;
     lastPage.value = data.meta.last_page;
     totalRecord.value = data.meta.total;
     
-    const setPageLink = paginationPages()
+    paginationPages()
     
   };
   
   const handleActiveEvent = async (event) => {
-    isApiCallComplete.value = false;
+    isShowLoader.value = true;
     const { data: updatedEvent } = await activeEvent(event.id, {
-        is_active: event.is_active
+      is_active: event.is_active
     })
-    isApiCallComplete.value = true;
+    isShowLoader.value = false;
     const currentEvent = events.value.find(item => item.id === event.id)
     currentEvent.is_active = updatedEvent.data.is_active
+  }
+    
+  const handleRemovedEvent = async (event) => {
+    isShowLoader.value = true;
+    await removeEvent(event.id)
+    const currentEvent = events.value.findIndex(item => item.id === event.id)
+    events.value.splice(currentEvent, 1)
+    fetchAllEvents('')
   }
 
   const paginationPages = () => { 
@@ -82,27 +90,28 @@ export const useEventStore = defineStore("eventStore", () => {
         pages.value.push(lastPage.value)
     }
     nowCurrentPage.value = currentPage.value
+    isShowLoader.value = false;
   }
 
   const handleSort = (column) => {
+    isShowLoader.value = true;
     orderDir.value = orderDir.value * -1
     sortType.value = (orderDir.value === 1) ?'DESC' : 'ASC'
     orderColumn.value = column
     
     fetchAllEvents('')
-    paginationPages()
   }
 
   const handleSearch = () => {    
-      fetchAllEvents('')
-      paginationPages()
+    isShowLoader.value = true;
+    fetchAllEvents('')
   }
 
-  const handlePerPage = (perpage) => {    
-      perPage.value = perpage
-      currentPage.value = 1
-      fetchAllEvents('')
-      paginationPages()
+  const handlePerPage = (perpage) => { 
+    isShowLoader.value = true;   
+    perPage.value = perpage
+    currentPage.value = 1
+    fetchAllEvents('')
   }
 
 
@@ -135,6 +144,7 @@ export const useEventStore = defineStore("eventStore", () => {
   return {
     errors,
     isApiCallComplete,
+    isShowLoader,
     events,
     pages,
     currentPage,
@@ -157,6 +167,7 @@ export const useEventStore = defineStore("eventStore", () => {
     handlePrev,
     handleNext,
     handleActiveEvent,
+    handleRemovedEvent,
     clearSearch,
     paginationPages,
   };

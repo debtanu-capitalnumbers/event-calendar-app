@@ -1,6 +1,7 @@
 import CalendarPage from "../pages/events/CalendarPage.vue"
 import EventsPage from "../pages/events/EventsPage.vue"
 import CreateEventPage from "../pages/events/CreateEventPage.vue"
+import EditEventPage from "../pages/events/EditEventPage.vue"
 import ImportEventCSVPage from "../pages/events/ImportEventCSVPage.vue"
 import ImportEventICSPage from "../pages/events/ImportEventICSPage.vue"
 import ExportEventCSVPage from "../pages/events/ExportEventCSVPage.vue"
@@ -34,6 +35,14 @@ const routes = [
         path: "/create-event",
         component: CreateEventPage,
         name: 'createevent',
+        meta: {
+            auth: true,
+        }
+    },
+    {
+        path: "/edit-event/:id",
+        component: EditEventPage,
+        name: 'editevent',
         meta: {
             auth: true,
         }

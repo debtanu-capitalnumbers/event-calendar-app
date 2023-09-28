@@ -20,6 +20,7 @@
                     :event="event" 
                     :key="event.id" 
                     @activeted="handleActiveEvent"
+                    @removed="handleRemovedEvent"
                     />
                 </tbody>
             </table>
@@ -37,7 +38,7 @@ import EventPagination from "./EventPagination.vue";
 import { useEventStore } from "../../../stores/event";
 
 const store = useEventStore()
-const { handleActiveEvent } = store
+const { handleActiveEvent, handleRemovedEvent } = store
 
 defineProps({
     events: Array

@@ -10,10 +10,10 @@
             <input type="checkbox" name="is_active" v-else @change="maskEventActive" data-toggle="toggle" data-onlabel="Active" data-offlabel="Inactive" data-onstyle="success" data-offstyle="danger">
         </td>
         <td style="width: 7%;">
-            <a href="#" class="btn btn-edit  btn-sm me-1">
+            <router-link :to="{ name: 'editevent', params: { id: event.id } }" class="btn btn-edit  btn-sm me-1">
                 <i class="fa-solid fa-pencil" style="color: #198754;"></i>
-            </a>
-            <a href="#" class="btn btn-delete  btn-sm ms-1">
+            </router-link>
+            <a href="#" @click="removeTask" class="btn btn-delete  btn-sm ms-1">
                 <i class="fa-solid fa-trash" style="color: #dc3545;"></i>
             </a>
         </td>
@@ -57,5 +57,10 @@
             is_active: !props.event.is_active
         }
         emit("activeted", updatedEvent)
+    }
+    const removeTask = () => {
+        if(confirm("Are you sure?")){
+            emit("removed", props.event)
+        }
     }
 </script>
