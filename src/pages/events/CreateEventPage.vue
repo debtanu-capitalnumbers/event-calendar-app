@@ -18,7 +18,7 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <label for="description" class="control-label">Description</label>
-                    <input type="text" v-model="form.description" class="form-control border-0 border-bottom" id="description" name="description" placeholder="description"  maxlength="100" />
+                    <input type="text" v-model="form.description" class="form-control border-0 border-bottom" id="description" name="description" placeholder="description" />
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <label for="location" class="control-label">Location</label>
@@ -30,7 +30,23 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <label for="event_category" class="control-label">Event Category</label>
-                    <input type="text" v-model="form.event_category" class="form-control border-0 border-bottom" id="event_category" name="event_category" placeholder="Select Event Category"  maxlength="100" />
+                    <select class="form-select border-0 border-bottom" aria-label="Default select example" v-model="form.event_category">
+                        <option value=""></option>
+                        <option value="Library/Books">Library/Books</option>
+                        <option value="Community Engagement">Community Engagement</option>
+                    </select>
+                </div>
+                <div class="row p-3 col-md-10 form-group required">
+                    <label for="event_start_date" class="control-label">Start Date</label>
+                    <input type="date" v-model="form.event_start_date" class="form-control" id="event_start_date" name="event_start_date" />
+                </div>
+                <div class="row p-3 col-md-10 form-group required">
+                    <label for="event_start_time" class="control-label">Start Time</label>
+                    <input type="time" v-model="form.event_start_time" class="form-control" id="event_start_time" name="event_start_time" />
+                </div>
+                <div class="row p-3 col-md-10 form-group required">
+                    <label for="event_end_time" class="control-label">End Time</label>
+                    <input type="time" v-model="form.event_end_time" class="form-control" id="event_end_time" name="event_end_time" />
                 </div>
                 <button class="w-10 btn btn-lg btn-primary" type="submit">Submit</button>
                 <button class="w-10 btn btn-lg btn-primary"  @click.prevent="resetForm">back</button>
@@ -47,7 +63,7 @@
 <script setup>
     import { onMounted, reactive, computed, ref } from "vue";
     import { storeToRefs } from "pinia";
-    import { useEventStore } from "../stores/event";
+    import { useEventStore } from "../../stores/event";
 
     const store = useEventStore()
     const { errors } = storeToRefs(store)
@@ -66,6 +82,18 @@
             default: null
         },
         event_category: {
+            type: String,
+            default: null
+        },
+        event_start_date: {
+            type: String,
+            default: null
+        },
+        event_start_time: {
+            type: String,
+            default: null
+        },
+        event_end_time: {
             type: String,
             default: null
         },
@@ -91,10 +119,14 @@
         console.log(form);
     }
     const handleSubmit = async () => {
-        // validateData(form);
+        errors.value = ''
+        validateData(form);
+        if(errors.value.length ===0 ){
+            await handleRegister(form)
+        } else {
+            return false;
+        }
         console.log(form);
-        // errors.value = ''
-        // await handleRegister(form)
         // if (!isLoggedIn.value) {
         //     router.push({ name: 'events' })
         // }

@@ -1,7 +1,7 @@
 <template>    
     <div class="input-group">
         <div class="form-outline">
-        <input type="text" v-model="filterName" class="form-control" placeholder="Search...">
+        <input type="text" name="search" v-model="filterName" class="form-control" placeholder="Search...">
         </div>
         <div class="input-group-append">
         <button class="btn btn-outline-secondary" v-show="computeWhenSearching" @click="clearSearch" type="button"><i class="fas fa-sync-alt"></i></button>

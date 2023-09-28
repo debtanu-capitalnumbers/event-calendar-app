@@ -8,9 +8,9 @@
 <script setup>
 import { onMounted } from "vue";
 import { storeToRefs } from 'pinia';
-import { useEventStore } from "../stores/event";
-import EventList from "../components/events/datatable/EventList.vue";
-import EventNavbar from "../components/events/EventNavbar.vue";
+import { useEventStore } from "../../stores/event";
+import EventList from "../../components/events/datatable/EventList.vue";
+import EventNavbar from "../../components/events/EventNavbar.vue";
 
 const store = useEventStore()
 const { fetchAllEvents } = store
