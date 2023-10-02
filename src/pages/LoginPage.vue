@@ -3,14 +3,17 @@
         <form class="auth-form" @submit.prevent="handleSubmit">
             <h2 class="h3 mb-4 fw-normal">Login</h2>
             <div class="form-floating mb-2">
-                <input type="username" class="form-control" :class="{ 'is-invalid': errors.credentials && errors.credentials[0] }" id="username" v-model="form.username" placeholder="name@example.com" />
+                <input type="username" class="form-control" :class="{ 'is-invalid': ((errors.credentials && errors.credentials[0]) || (errors.username && errors.username[0])) }" id="username" v-model="form.username" placeholder="name@example.com" />
                 <label for="username">Username</label>
+                <div class="invalid-feedback" v-if="((errors.credentials && errors.credentials[0]) || (errors.username && errors.username[0]))">
+                    {{ ((errors.credentials && errors.credentials[0]) || (errors.username && errors.username[0])) }}
+                </div>
             </div>
             <div class="form-floating mb-3">
-                <input type="password" class="form-control" :class="{ 'is-invalid': errors.credentials && errors.credentials[0] }" id="password" v-model="form.password" placeholder="Password" />
+                <input type="password" class="form-control" :class="{ 'is-invalid': ((errors.credentials && errors.credentials[0]) || (errors.password && errors.password[0])) }" id="password" v-model="form.password" placeholder="Password" />
                 <label for="password">Password</label>
-                <div class="invalid-feedback" v-if="errors.credentials && errors.credentials[0]">
-                    {{ errors.credentials && errors.credentials[0] }}
+                <div class="invalid-feedback" v-if="((errors.credentials && errors.credentials[0]) || (errors.password && errors.password[0]))">
+                    {{ ((errors.credentials && errors.credentials[0]) || (errors.password && errors.password[0])) }}
                 </div>
             </div>
             
@@ -45,10 +48,10 @@
         password: '' 
     })
     onMounted(async () => {
-        errors.value = ''
+        errors.value = {}
     })
     const handleSubmit = async () => {
-        errors.value = ''
+        errors.value = {}
         await handleLogin(form)
         router.push({ name: 'events' })
     }

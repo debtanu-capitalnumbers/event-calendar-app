@@ -58,7 +58,7 @@
                 if((currentPage.value * perPage.value) <= totalRecord.value){
                     return currentPage.value * perPage.value
                 } else {
-                    return 0;
+                    return totalRecord.value;
                 }
             } else {
                 return endingShowingRecord.value

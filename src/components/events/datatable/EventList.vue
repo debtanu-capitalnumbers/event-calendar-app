@@ -34,11 +34,13 @@ import EventPerPage from "./EventPerPage.vue";
 import EventSearch from "./EventSearch.vue";
 import EventTableHeader from "./EventTableHeader.vue";
 import EventPagination from "./EventPagination.vue";
+import { storeToRefs } from 'pinia';
 
 import { useEventStore } from "../../../stores/event";
 
 const store = useEventStore()
 const { handleActiveEvent, handleRemovedEvent } = store
+const { isShowLoader } = storeToRefs(store)
 
 defineProps({
     events: Array

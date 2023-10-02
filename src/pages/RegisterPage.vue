@@ -58,11 +58,11 @@ const form = reactive({
 })
 
 onMounted(async () => {
-    errors.value = ''
+    errors.value = {}
 })
 
 const handleSubmit = async () => {
-    errors.value = ''
+    errors.value = {}
     await handleRegister(form)
     if (isLoggedIn.value) {
         router.push({ name: 'events' })

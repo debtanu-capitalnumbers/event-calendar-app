@@ -6,8 +6,8 @@
         <td>{{ event.location }}</td>
         <td>{{ event.event_category }}</td>
         <td>
-            <input type="checkbox" name="is_active" checked v-if="event.is_active" @change="maskEventActive" data-toggle="toggle" data-onlabel="Active" data-offlabel="Inactive" data-onstyle="success" data-offstyle="danger">
-            <input type="checkbox" name="is_active" v-else @change="maskEventActive" data-toggle="toggle" data-onlabel="Active" data-offlabel="Inactive" data-onstyle="success" data-offstyle="danger">
+            <img src="@/assets/active-removebg-preview.png" alt="logo" style="width: 100px;cursor: pointer;" @click="maskEventActive" v-if="event.is_active">
+            <img src="@/assets/inactive-removebg-preview.png" alt="logo" style="width: 100px;cursor: pointer;" @click="maskEventActive" v-else>
         </td>
         <td style="width: 7%;">
             <router-link :to="{ name: 'editevent', params: { id: event.id } }" class="btn btn-edit  btn-sm me-1">

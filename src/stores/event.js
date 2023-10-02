@@ -1,6 +1,6 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { allEvents, activeEvent, removeEvent } from "../http/event-api";
+import { allEvents, activeEvent, removeEvent, createEvent, updateEvent } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
@@ -20,6 +20,7 @@ export const useEventStore = defineStore("eventStore", () => {
   const nowCurrentPage = ref(1)
   const isApiCallComplete = ref(false)
   const isShowLoader = ref(false)
+  const status = ref(200);
 
   const fetchAllEvents = async (type) => {
     isShowLoader.value = true;
@@ -37,14 +38,48 @@ export const useEventStore = defineStore("eventStore", () => {
       orderColumn.value = 'title'
       filterName.value = ''
     }
-    const { data} = await allEvents(setParams)
-    events.value = data.data;
-    currentPage.value = data.meta.current_page;
-    lastPage.value = data.meta.last_page;
-    totalRecord.value = data.meta.total;
+    try {
+      await allEvents(setParams).then((response) => {
+        status.value = response.status;
+        message.value = response.data.message;    
+        events.value = response.data.data;
+        currentPage.value = response.data.meta.current_page;
+        lastPage.value = response.data.meta.last_page;
+        totalRecord.value = response.data.meta.total;
+        
+        paginationPages()
+      });
+      errors.value = {};
+    } catch (error) {
+        if (error.response && error.response.status) {
+            status.value = error.response.status
+            errors.value.common = error.response.message;
+        }
+        if (error.response && status.value === 422) {
+            errors.value = error.response.data.errors;
+        }
+    }  
     
-    paginationPages()
     
+  };
+  const handleCreateEvent = async (form) => {
+    isShowLoader.value = true;
+    try {
+      await createEvent(form).then((response) => {
+          status.value = response.status;
+          message.value = response.data.message;    
+      });
+      errors.value = {};
+    } catch (error) {
+        if (error.response && error.response.status) {
+            status.value = error.response.status
+            errors.value.common = error.response.message;
+        }
+        if (error.response && status.value === 422) {
+            errors.value = error.response.data.errors;
+        }
+    }  
+    isShowLoader.value = false;  
   };
   
   const handleActiveEvent = async (event) => {
@@ -166,6 +201,7 @@ export const useEventStore = defineStore("eventStore", () => {
     switchPage,
     handlePrev,
     handleNext,
+    handleCreateEvent,
     handleActiveEvent,
     handleRemovedEvent,
     clearSearch,

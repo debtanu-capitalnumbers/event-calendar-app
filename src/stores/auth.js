@@ -35,6 +35,7 @@ export const useAuthStore = defineStore("authStore", () => {
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status
+                errors.value.common = error.response.message;
             }
             if (error.response && status.value === 422) {
                 errors.value = error.response.data.errors;
@@ -53,6 +54,7 @@ export const useAuthStore = defineStore("authStore", () => {
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status
+                errors.value.common = error.response.message;
             }
             if (error.response && status.value === 422) {
                 errors.value = error.response.data.errors;
@@ -71,6 +73,7 @@ export const useAuthStore = defineStore("authStore", () => {
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status
+                errors.value.common = error.response.message;
             }
             if (error.response && status.value === 422) {
                 errors.value = error.response.data.errors;
@@ -92,6 +95,7 @@ export const useAuthStore = defineStore("authStore", () => {
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status
+                errors.value.common = error.response.message;
             }
             if (error.response && status.value === 422) {
                 errors.value = error.response.data.errors;

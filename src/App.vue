@@ -25,5 +25,3 @@ import Footer from './components/Footer.vue';
     opacity: 0;
   }
 </style>
-<style>
-</style>

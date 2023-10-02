@@ -42,7 +42,7 @@ const form = reactive({
     email: ''
 })
 onMounted(async () => {
-    errors.value = ''
+    errors.value = {}
     message.value = ''
     status.value = ''
     if (isLoggedIn.value) {
@@ -50,7 +50,7 @@ onMounted(async () => {
     }
 })
 const handleSubmit = async () => {
-    errors.value = ''
+    errors.value = {}
     message.value = ''
     status.value = ''
     await handleForgotPassword(form)
