@@ -10,7 +10,7 @@ export const useEventStore = defineStore("eventStore", () => {
   const lastPage = ref(1)
   const totalRecord = ref(0)
   const pages = ref([])
-  const perPage = ref(2)
+  const perPage = ref(10)
   const filterName = ref('')
   const orderColumn = ref('event_start_date_time')
   const orderDir = ref(1)
@@ -24,6 +24,7 @@ export const useEventStore = defineStore("eventStore", () => {
 
   const fetchAllEvents = async (type) => {
     isShowLoader.value = true;
+    isApiCallComplete.value = false;
     errors.value = {};
     let setParams = '?'
     if(type !== 'fresh'){
@@ -69,6 +70,7 @@ export const useEventStore = defineStore("eventStore", () => {
 
   const handleCreateEvent = async (form) => {
     isShowLoader.value = true;
+    isApiCallComplete.value = false;
     errors.value = {};
     try {
       await createEvent(form).then((response) => {
@@ -101,6 +103,7 @@ export const useEventStore = defineStore("eventStore", () => {
     
   const handleRemovedEvent = async (event) => {
     isShowLoader.value = true;
+    isApiCallComplete.value = false;
     errors.value = {};
     await removeEvent(event.id)
     const currentEvent = events.value.findIndex(item => item.id === event.id)
@@ -111,13 +114,13 @@ export const useEventStore = defineStore("eventStore", () => {
   const paginationPages = () => { 
     pages.value.length = 0;
     pages.value.push(startPage.value)
-    if( ((currentPage.value - 1) > (startPage.value + 2)) && lastPage.value > 5){   
+    if( ((currentPage.value - 1) > (startPage.value + 2)) && lastPage.value > 6){   
       pages.value.push('...')  
       startPageLink.value = ((currentPage.value - 1) < (lastPage.value - 4)) ? (currentPage.value - 1) : (lastPage.value - 4);
     } else {
         startPageLink.value = startPage.value+1;
     }
-    if( ((currentPage.value + 1) < (lastPage.value - 2)) && lastPage.value > 5){  
+    if( ((currentPage.value + 1) < (lastPage.value - 2)) && lastPage.value > 6){  
         endPageLink.value = ((currentPage.value + 1) > (startPage.value + 4)) ? (currentPage.value + 1) : (startPage.value + 4);
         for (let index = startPageLink.value; index <= endPageLink.value; index++) {
           pages.value.push(index)
@@ -134,6 +137,7 @@ export const useEventStore = defineStore("eventStore", () => {
     }
     nowCurrentPage.value = currentPage.value
     isShowLoader.value = false;
+    isApiCallComplete.value = true;
   }
 
   const handleSort = (column) => {
