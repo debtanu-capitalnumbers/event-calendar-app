@@ -4,6 +4,7 @@ import Footer from './components/Footer.vue';
 </script>
 
 <template>
+  <notifications />
   <Navbar />
   <!-- <router-view/> -->
   <router-view v-slot="{ Component }">

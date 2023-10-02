@@ -22,6 +22,7 @@ export const useAuthStore = defineStore("authStore", () => {
     };
 
     const handleLogin = async (credentials) => {
+        errors.value = {};
         await csrfCookie();
         try {
             await login(credentials).then((response) => {
@@ -30,7 +31,6 @@ export const useAuthStore = defineStore("authStore", () => {
                 token.value = response.data.token;
                 localStorage.setItem('token', token.value);        
             });
-            errors.value = {};
             await fetchUser();
         } catch (error) {
             if (error.response && error.response.status) {
@@ -44,13 +44,13 @@ export const useAuthStore = defineStore("authStore", () => {
     };
 
     const handleForgotPassword = async (credentials) => {
+        errors.value = {};
         await csrfCookie();
         try {
             await forgotPassword(credentials).then((response) => {
                 status.value = response.status;
                 message.value = response.data.message;
             });
-            errors.value = {};
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status
@@ -63,13 +63,13 @@ export const useAuthStore = defineStore("authStore", () => {
     };
 
     const handleResetPassword = async (credentials) => {
+        errors.value = {};
         await csrfCookie();
         try {
             await resetPassword(credentials).then((response) => {
                 status.value = response.status;
                 message.value = response.data.message;
             });
-            errors.value = {};
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status
@@ -82,6 +82,7 @@ export const useAuthStore = defineStore("authStore", () => {
     };
 
     const handleRegister = async (newUser) => {
+        errors.value = {};
         try {
             await register(newUser);
             await handleLogin({
@@ -91,7 +92,6 @@ export const useAuthStore = defineStore("authStore", () => {
                 status.value = response.status;
                 message.value = response.data.message;
             });
-            errors.value = {};
         } catch (error) {
             if (error.response && error.response.status) {
                 status.value = error.response.status

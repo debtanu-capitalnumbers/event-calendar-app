@@ -1,5 +1,6 @@
 <template>    
     <tr>
+        <td><img :src="imageUrl" alt="example placeholder" :style="{ 'max-width':'80px', 'max-height':'80px'}"/></td>
         <td>{{ event.title }}</td>
         <td>{{ event.event_start_date_time }}</td>
         <td>{{ event.event_end_date_time }}</td>
@@ -46,9 +47,18 @@
 </style>
 <script setup>
     import { computed } from "vue";
+    import imagedefaultUrl from '../../../assets/image-placeholder.png';
     const props = defineProps({
         event: Object
     })
+
+    const imageUrl = computed(
+        () => {
+            console.log(imagedefaultUrl);
+            console.log(props.event.download_path);
+            return (props.event.download_path !== null && props.event.download_path !== "") ? props.event.download_path : imagedefaultUrl
+        }
+    )
     const emit = defineEmits(['updated', 'activeted', 'removed'])
         
     const maskEventActive = event => {

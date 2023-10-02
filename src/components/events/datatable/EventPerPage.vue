@@ -4,7 +4,6 @@
         <div class="dropdown">
             <button type="button" class="btn btn-outline-dark dropdown-toggle btnhvr" data-bs-toggle="dropdown">{{ perPage }}</button>
             <ul class="dropdown-menu">
-            <li><a class="dropdown-item" @click.prevent="handlePerPage('2')">2</a></li>
             <li><a class="dropdown-item" @click.prevent="handlePerPage('10')">10</a></li>
             <li><a class="dropdown-item" @click.prevent="handlePerPage('20')">20</a></li>
             <li><a class="dropdown-item" @click.prevent="handlePerPage('30')">30</a></li>

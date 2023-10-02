@@ -8,11 +8,11 @@ export const useEventStore = defineStore("eventStore", () => {
   const currentPage = ref(1)
   const startPage = ref(1)
   const lastPage = ref(1)
-  const totalRecord = ref(1)
+  const totalRecord = ref(0)
   const pages = ref([])
   const perPage = ref(2)
   const filterName = ref('')
-  const orderColumn = ref('title')
+  const orderColumn = ref('event_start_date_time')
   const orderDir = ref(1)
   const sortType = ref('DESC')
   const startPageLink = ref(1)
@@ -24,6 +24,7 @@ export const useEventStore = defineStore("eventStore", () => {
 
   const fetchAllEvents = async (type) => {
     isShowLoader.value = true;
+    errors.value = {};
     let setParams = '?'
     if(type !== 'fresh'){
       setParams = setParams + `page=`+currentPage.value
@@ -35,48 +36,53 @@ export const useEventStore = defineStore("eventStore", () => {
       currentPage.value = 1
       perPage.value = 10
       sortType.value = 'DESC'
-      orderColumn.value = 'title'
+      orderColumn.value = 'event_start_date_time'
       filterName.value = ''
     }
     try {
       await allEvents(setParams).then((response) => {
-        status.value = response.status;
-        message.value = response.data.message;    
+        status.value = response.status;    
         events.value = response.data.data;
         currentPage.value = response.data.meta.current_page;
         lastPage.value = response.data.meta.last_page;
         totalRecord.value = response.data.meta.total;
         
-        paginationPages()
       });
-      errors.value = {};
     } catch (error) {
-        if (error.response && error.response.status) {
-            status.value = error.response.status
-            errors.value.common = error.response.message;
-        }
-        if (error.response && status.value === 422) {
-            errors.value = error.response.data.errors;
-        }
-    }  
-    
-    
+      events.value = [];
+      currentPage.value = 1;
+      lastPage.value = 1;
+      totalRecord.value = 0;
+      if (error.response && error.response.status) {
+        status.value = error.response.status
+      }
+      if (error.response && status.value === 422) {
+        errors.value = error.response.data.errors;
+      }
+      if(error.response.data.message){
+        errors.value.common = error.response.data.message;
+      }
+    }
+    paginationPages()
+    isShowLoader.value = false;
   };
+
   const handleCreateEvent = async (form) => {
     isShowLoader.value = true;
+    errors.value = {};
     try {
       await createEvent(form).then((response) => {
-          status.value = response.status;
-          message.value = response.data.message;    
+        status.value = response.status;  
       });
-      errors.value = {};
     } catch (error) {
         if (error.response && error.response.status) {
             status.value = error.response.status
-            errors.value.common = error.response.message;
         }
         if (error.response && status.value === 422) {
             errors.value = error.response.data.errors;
+        }
+        if(error.response.data.message){
+          errors.value.common = error.response.data.message;
         }
     }  
     isShowLoader.value = false;  
@@ -84,6 +90,7 @@ export const useEventStore = defineStore("eventStore", () => {
   
   const handleActiveEvent = async (event) => {
     isShowLoader.value = true;
+    errors.value = {};
     const { data: updatedEvent } = await activeEvent(event.id, {
       is_active: event.is_active
     })
@@ -94,6 +101,7 @@ export const useEventStore = defineStore("eventStore", () => {
     
   const handleRemovedEvent = async (event) => {
     isShowLoader.value = true;
+    errors.value = {};
     await removeEvent(event.id)
     const currentEvent = events.value.findIndex(item => item.id === event.id)
     events.value.splice(currentEvent, 1)
@@ -149,19 +157,18 @@ export const useEventStore = defineStore("eventStore", () => {
     fetchAllEvents('')
   }
 
-
-
-
   const switchPage = (page) => {
       currentPage.value = page
       handleSearch()
   }
+
   const handlePrev = () => {
       if(startPage.value < currentPage.value){
           currentPage.value--
           handleSearch()
       }
   }
+
   const handleNext = () => {
       if(lastPage.value > currentPage.value){
           currentPage.value++
@@ -178,6 +185,7 @@ export const useEventStore = defineStore("eventStore", () => {
 
   return {
     errors,
+    status,
     isApiCallComplete,
     isShowLoader,
     events,

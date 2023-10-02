@@ -1,5 +1,6 @@
 <template>
     <tr>
+        <th></th>
         <th @click="handleSort('title')" :class="[computeSortTypeClassForTitle, 'sort-control']">TITLE</th>
         <th @click="handleSort('event_start_date_time')" :class="[computeSortTypeClassForStartDate, 'sort-control']">START DATETIME</th>
         <th @click="handleSort('event_end_date_time')" :class="[computeSortTypeClassForEndDate, 'sort-control']">END DATETIME</th>

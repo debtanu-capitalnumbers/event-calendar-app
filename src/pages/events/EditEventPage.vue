@@ -4,8 +4,8 @@
         <div class="row">
             <div class="col-sm-3"><h4 class=" mt-2">Add Event</h4></div>
         </div>
-        <div class="p-3 border">{{ form }}
-            <form @submit.prevent="handleSubmit" enctype='multipart/form-data'>
+        <div class="p-3 border">
+            <form @submit.prevent="handleSubmit">
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="title" class="control-label">Title</span>
                     <input ref="title" type="text" v-model="form.title" class="form-control border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.title && errors.title[0] }" id="title" name="title" placeholder="Title"  maxlength="100" />
@@ -19,7 +19,7 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="description" class="control-label">Description</span>                    
-                    <vue-editor ref="description" v-model="form.description" class="form-control border-0" id="description" name="description" placeholder="description" :class="{ 'is-invalid': errors.description && errors.description[0] }"></vue-editor>
+                    <vue-editor ref="description" v-model="form.description" class="form-control border-0" id="description" name="description" placeholder="Description" :class="{ 'is-invalid': errors.description && errors.description[0] }"></vue-editor>
                     <div class="invalid-feedback" v-if="errors.description && errors.description[0]">
                         {{ errors.description && errors.description[0] }}
                     </div>
@@ -35,11 +35,11 @@
                         {{ errors.location && errors.location[0] }}
                     </div>
                 </div>
-                <div class="row p-3 col-md-10 form-group required">
+                <div class="row p-3 col-md-10 form-group">
                     <span for="cover_image" class="control-label">Cover Image</span>
                     <div class="custom-file">
-                        <input ref="cover_image" type="file" class="custom-file-input form-control" name="cover_image" id="cover_image" @change="$event => updatePhoto($event.target.files)">
-                        <span class="custom-file-label border-0 border-bottom" for="cover_image" :class="{ 'is-invalid': errors.cover_image && errors.cover_image[0] }">{{ computedinputFileLabel }}</span>
+                        <input ref="cover_image" type="file" class="custom-file-input" name="cover_image" id="cover_image" @change="$event => updatePhoto($event.target.files)">
+                        <span class="custom-file-label border-0 border-bottom form-control" for="cover_image" :class="{ 'is-invalid': errors.cover_image && errors.cover_image[0] }">{{ computedinputFileLabel }}</span>
                     </div>
 
                     <div class="col-md-12">
@@ -87,33 +87,20 @@
                 </div>
                 <button class="w-10 btn btn-warning m-1" type="submit">Submit</button>
                 <button class="w-10 btn btn-secondary m-1"  @click.prevent="resetForm">back</button>
-                <VueDatePicker v-model="date"></VueDatePicker>
             </form>
         </div>
     </div>
 </template>
 <style>
-    /* div#description {
+    div#description {
         height: auto;
+    }
+    .invalid-feedback {
+        display: block;
     }
     .form-group.required .control-label:after {
         content:"*";
         color:red;
-    }
-    .dp__icon {
-        stroke: currentcolor;
-        fill: currentcolor;
-        inset-inline-end: 0 !important;
-        inset-inline: auto;
-        background-color: #efefef;
-        padding: 10px;
-        border-radius: 0px 3px 3px 0px;
-        margin-right: 1px;
-        border-left: 1px solid #ddd;
-    }
-    .dp__pointer {
-        cursor: pointer;
-        padding-right: 36px;
     }
     .image_info {
         color: #dee2e6;
@@ -172,63 +159,83 @@
     }
     .form-control.is-invalid>.ql-container, .was-validated .form-control:invalid>.ql-container {
         border: 1px solid #dc3545 !important;
-    } */
-    /* .dp__theme_light {
-        --dp-background-color: unset;
-    }
-    .form-control.is-invalid.dp__theme_light, .was-validated .form-control:invalid.dp__theme_light {
+    } 
+    /* .form-control.is-invalid.dp__theme_light, .was-validated .form-control:invalid.dp__theme_light {
         background-position: right calc(2.375em + 0.1875rem) center;
     } */
+    .dp__icon {
+        stroke: currentcolor;
+        fill: currentcolor;
+        inset-inline-end: 0 !important;
+        inset-inline: auto;
+        /* background-color: #efefef; */
+        /* padding: 10px; */
+        border-radius: 0px 3px 3px 0px;
+        margin-right: 1px;
+        /* border-left: 1px solid #ddd; */
+    }
+    .dp__pointer {
+        cursor: pointer;
+        padding-right: 36px;
+    }
+    .dp__theme_light {
+        --dp-background-color: unset !important;
+    } 
+    span.custom-file-label.border-0.border-bottom.form-control.is-invalid {
+        background-size: calc(9.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
 </style>
 <script setup>
     import { onMounted, reactive, computed, ref } from "vue";
     import { storeToRefs } from "pinia";
+    import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
-    // Basic Use - Covers most scenarios
     import { VueEditor } from "vue3-editor";
-    import VueDatePicker from '@vuepic/vue-datepicker';
-    import '@vuepic/vue-datepicker/dist/main.css';
     import imagedefaultUrl from '../../assets/image-placeholder.png'
     import moment from 'moment';
+    import { notify } from "@kyvg/vue3-notification";
+    import VueDatePicker from '@vuepic/vue-datepicker';
+
     const store = useEventStore()
     const { handleCreateEvent } = store
-    const { errors, isShowLoader } = storeToRefs(store)
+    const { errors, status, isShowLoader } = storeToRefs(store)
 
+    const router = useRouter()
     const imageData = ref(null)
     
     const initialState = defineProps({
         title: {
             type: String,
-            default: null
+            default: ''
         },
         description: {
             type: String,
-            default: null
+            default: ''
         },
         location: {
             type: String,
-            default: null
+            default: ''
         },
         event_category: {
             type: String,
-            default: null
+            default: ''
         },
         event_start_date: {
             type: String,
-            default: null
+            default: ''
         },
         event_start_time: {
             type: String,
-            default: null
+            default: ''
         },
         event_end_time: {
             type: String,
-            default: null
+            default: ''
         },
         cover_image: {
-            type: Array,
-            default: null
+            type: Object,
+            default: {}
         },
     })
     
@@ -248,7 +255,6 @@
     )
     const imageUrl = computed(
         () => {
-            // console.log("imageData   "+imageData.value)
             return (imageData.value !== null) ? imageData.value : imagedefaultUrl
         }
     )
@@ -292,22 +298,23 @@
             imageData.value = form.cover_image = null
             return
         } {
-            console.log(files[0])
+            console.log(files[0].size)
             const size = files[0].size
             const type = files[0].type
             
-            if(size > (1024*4)){
-                errors.value.title = ["Maximum upload image size 4MB."]
-                cover_image.scrollIntoView({ behavior: 'smooth' });
+            if(size > (1024*1024*4)){
+                errors.value.cover_image = ["Maximum upload image size 4MB."]
+                
+                //cover_image.scrollIntoView({ behavior: 'smooth' });
                 return
             }
             if(type !== "image/png" && type !== "image/jpg" && type !== "image/jpeg"){
-                errors.value.title = ["Only support JPG/JPEG/PNG format."]
-                cover_image.scrollIntoView({ behavior: 'smooth' });
+                errors.value.cover_image = ["Only support JPG/JPEG/PNG format."]
+                //cover_image.scrollIntoView({ behavior: 'smooth' });
                 return
             }
-
-
+            
+            
             const reader = new FileReader()
             reader.readAsDataURL(files[0])
             reader.onload = (event) => {
@@ -319,6 +326,8 @@
                 name: files[0].name,
                 data: files[0]
             };
+            // console.log(errors.cover_image)
+            console.log(form.cover_image)
             
         }
     }
@@ -326,14 +335,32 @@
         Object.assign(form, initialState);
     }
     const handleSubmit = async () => {
-        console.log(form.event_start_date)
         const formValidation = validateData(form);
         if( JSON.stringify(errors.value) === '{}' ){  
             form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
             form.event_start_time = moment(form.event_start_time).format("hh:mm:ss")
             form.event_end_time = moment(form.event_end_time).format("hh:mm:ss") 
-            console.log(form)
-            await handleCreateEvent(form)
+
+            let formData = new FormData();
+            formData.append('title', form.title);
+            formData.append('description', form.description);
+            formData.append('location', form.location);
+            formData.append('event_category', form.event_category);
+            formData.append('event_start_date', form.event_start_date);
+            formData.append('event_start_time', form.event_start_time);
+            formData.append('event_end_time', form.event_end_time);
+            if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
+            await handleCreateEvent(formData)            
+            if(errors.value.common) {
+                notify({
+                    title: errors.value.common,
+                    type: 'error',
+                });
+            }
+            console.log(status.value)
+            if(status.value === 200 || status.value === 201){                
+                router.push({ name: 'events' })
+            }
         } else {
             return false;
         }
