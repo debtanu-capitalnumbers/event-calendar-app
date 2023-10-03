@@ -7,7 +7,7 @@
         <div class="p-3 border">
             <form @submit.prevent="handleSubmit">
                 <div class="row p-3 col-md-10 form-group required">
-                    <span for="export_type" class="control-label">Event Category</span>
+                    <span for="export_type" class="control-label">Export Type</span>
                     <select ref="export_type" class="form-select border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.export_type && errors.export_type[0] }" aria-label="Default select example" name="export_type" id="export_type" v-model="form.export_type">
                         <option value="csv">CSV</option>
                         <option value="ics">ICS</option>

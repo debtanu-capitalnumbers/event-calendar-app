@@ -361,18 +361,17 @@
             imageData.value = form.cover_image = null
             return
         } {
-            console.log(files[0].size)
             const size = files[0].size
             const type = files[0].type
             
-            if(size > (1024*1024*4)){
-                errors.value.cover_image = ["Maximum upload image size 4MB."]
-                
+            if(type !== "image/png" && type !== "image/jpg" && type !== "image/jpeg"){
+                errors.value.cover_image = ["Only support JPG/JPEG/PNG format."]
                 //cover_image.scrollIntoView({ behavior: 'smooth' });
                 return
             }
-            if(type !== "image/png" && type !== "image/jpg" && type !== "image/jpeg"){
-                errors.value.cover_image = ["Only support JPG/JPEG/PNG format."]
+            if(size > (1024*1024*4)){
+                errors.value.cover_image = ["Maximum upload image size 4MB."]
+                
                 //cover_image.scrollIntoView({ behavior: 'smooth' });
                 return
             }
@@ -389,9 +388,6 @@
                 name: files[0].name,
                 data: files[0]
             };
-            // console.log(errors.cover_image)
-            console.log(form.cover_image)
-            
         }
     }
 

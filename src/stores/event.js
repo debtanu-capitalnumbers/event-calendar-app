@@ -1,6 +1,6 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { allEvents, allCalendarEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent } from "../http/event-api";
+import { allEvents, allCalendarEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent, importEvent } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
@@ -72,6 +72,7 @@ export const useEventStore = defineStore("eventStore", () => {
     paginationPages()
     resetValue()
   };
+
   const fetchCalendarEvents = async (type) => {    
     initValue()
     try {
@@ -178,6 +179,27 @@ export const useEventStore = defineStore("eventStore", () => {
       await exportEvent(form).then((response) => {
         status.value = response.status;  
         eventFile.value = response.data.url;  
+        errors.value.common = response.data.message;  
+      });
+    } catch (error) {
+        if (error.response && error.response.status) {
+            status.value = error.response.status
+        }
+        if (error.response && status.value === 422) {
+            errors.value = error.response.data.errors;
+        }
+        if(error.response.data.message){
+          errors.value.common = error.response.data.message;
+        }
+    }  
+    resetValue()  
+  };
+
+  const handleImportEvent = async (form) => {
+    initValue()
+    try {
+      await importEvent(form).then((response) => {
+        status.value = response.status; 
         errors.value.common = response.data.message;  
       });
     } catch (error) {
@@ -320,6 +342,7 @@ export const useEventStore = defineStore("eventStore", () => {
     handleUpdateEvent,
     handleActiveEvent,
     handleRemovedEvent,
+    handleImportEvent,
     handleExportEvent,
     clearSearch,
     paginationPages,
