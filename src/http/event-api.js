@@ -4,6 +4,7 @@ const apiPath = import.meta.env.VITE_API_PATH
 const resource = apiPath + "/events"
 
 export const allEvents = params => http.get(`${resource}/${params}`)
+export const allCalendarEvents = params => http.get(`${resource}/calendar/events`)
 
 export const createEvent = event => http.post(resource, event)
 

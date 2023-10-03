@@ -1,9 +1,10 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { allEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent } from "../http/event-api";
+import { allEvents, allCalendarEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
+  const calendarEvents = ref([])
   const event = ref({})
   const eventFile = ref({})
   const errors = ref({});
@@ -69,6 +70,26 @@ export const useEventStore = defineStore("eventStore", () => {
       }
     }
     paginationPages()
+    resetValue()
+  };
+  const fetchCalendarEvents = async (type) => {    
+    initValue()
+    try {
+      await allCalendarEvents().then((response) => {  
+        calendarEvents.value = response.data.data;              
+      });
+    } catch (error) {
+      calendarEvents.value = [];
+      if (error.response && error.response.status) {
+        status.value = error.response.status
+      }
+      if (error.response && status.value === 422) {
+        errors.value = error.response.data.errors;
+      }
+      if(error.response.data.message){
+        errors.value.common = error.response.data.message;
+      }
+    }
     resetValue()
   };
 
@@ -178,6 +199,8 @@ export const useEventStore = defineStore("eventStore", () => {
     isApiCallComplete.value = false;
     errors.value = {};
     eventFile.value = {};
+    calendarEvents.value = [];
+    events.value = [];
   };
 
   const resetValue = () => {
@@ -268,6 +291,7 @@ export const useEventStore = defineStore("eventStore", () => {
     isApiCallComplete,
     isShowLoader,
     events,
+    calendarEvents,
     event,
     eventFile,
     pages,
@@ -284,6 +308,7 @@ export const useEventStore = defineStore("eventStore", () => {
     endPageLink,
     nowCurrentPage,
     fetchAllEvents,
+    fetchCalendarEvents,
     handleSort,
     handleSearch,
     handlePerPage,
