@@ -7,6 +7,8 @@ export const allEvents = params => http.get(`${resource}/${params}`)
 
 export const createEvent = event => http.post(resource, event)
 
+export const showEvent = id => http.get(`${resource}/${id}`)
+
 export const updateEvent = (id, event) => http.post(`${resource}/${id}`, event)
 
 export const removeEvent = id => http.delete(`${resource}/${id}`)

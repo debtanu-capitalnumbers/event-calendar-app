@@ -178,9 +178,9 @@
         cursor: pointer;
         padding-right: 36px;
     }
-    .dp__theme_light {
-        --dp-background-color: unset !important;
-    } 
+    input.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
+        background-color: unset;
+    }
     span.custom-file-label.border-0.border-bottom.form-control.is-invalid {
         background-size: calc(9.75em + 0.375rem) calc(0.75em + 0.375rem);
     }
@@ -226,12 +226,12 @@
             default: ''
         },
         event_start_time: {
-            type: String,
-            default: ''
+            type: Object,
+            default: {}
         },
         event_end_time: {
-            type: String,
-            default: ''
+            type: Object,
+            default: {}
         },
         cover_image: {
             type: Object,
@@ -261,38 +261,101 @@
     
     const validateData = (form) => {
         errors.value = {};
+        let errorCount = 0;
+        let firstError = '';
+        let notifyError = '';
         if(form.title === '' || form.title === null){
-            errors.value.title = ["The title field is required."]
+            errors.value.title = ["The title field is required."];
+            if(firstError === "") {
+                firstError = errors.value.title[0];
+            }
+            errorCount ++;
             // title.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.description === '' || form.description === null){
             errors.value.description = ["The description field is required."]
+            if(firstError === "") {
+                firstError = errors.value.description[0];
+            }
+            errorCount ++;
             // description.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.location === '' || form.location === null){
             errors.value.location = ["The location field is required."]
+            if(firstError === "") {
+                firstError = errors.value.location[0];
+            }
+            errorCount ++;
             // event_location.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_category === '' || form.event_category === null){
             errors.value.event_category = ["The event category field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_category[0];
+            }
+            errorCount ++;
             // event_category.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_start_date === '' || form.event_start_date === null){
             errors.value.event_start_date = ["The event start date field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_start_date[0];
+            }
+            errorCount ++;
             // event_start_date.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_start_time === '' || form.event_start_time === null){
             errors.value.event_start_time = ["The event start time field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_start_time[0];
+            }
+            errorCount ++;
             // event_start_time.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_end_time === '' || form.event_end_time === null){
             errors.value.event_end_time = ["The event end time field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_end_time[0];
+            }
+            errorCount ++;
             // event_end_time.scrollIntoView({ behavior: 'smooth' });
         }
+        if(form.event_start_time !== '' && form.event_start_time !== null && form.event_end_time !== '' && form.event_end_time !== null) {            
+            const event_start_time_hours = moment(form.event_start_time).format("h");
+            const event_start_time_minutes = moment(form.event_start_time).format("m");
+            const event_end_time_hours = moment(form.event_end_time).format("h");
+            const event_end_time_minutes = moment(form.event_end_time).format("m");
+            if(event_end_time_hours < event_start_time_hours) {                
+                errors.value.event_end_time = ["The event end time must be greater than start time."]
+                if(firstError === "") {
+                    firstError = errors.value.event_end_time[0];
+                }
+                errorCount ++;
+            } else if(event_end_time_hours === event_start_time_hours && event_end_time_minutes <= event_start_time_minutes) {                
+                errors.value.event_end_time = ["The event end time must be greater than start time."]
+                if(firstError === "") {
+                    firstError = errors.value.event_end_time[0]
+                }
+                errorCount ++;
+            }
+        }
+        
+        notifyError = firstError;
+        if(errorCount >= 2){
+            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
+        }
+        if(notifyError !== ""){
+            notify({
+                title: notifyError,
+                type: 'error',
+            });
+        }
+        // The title field is required. (and 4 more errors)
         window.scrollTo(0,0);
         // event_category.scrollIntoView({ behavior: 'smooth' });
         return
     }
+    
     const updatePhoto = (files) => {
         if (!files.length) {
             imageData.value = form.cover_image = null
@@ -331,9 +394,11 @@
             
         }
     }
+
     const resetForm = () => {
         Object.assign(form, initialState);
     }
+
     const handleSubmit = async () => {
         const formValidation = validateData(form);
         if( JSON.stringify(errors.value) === '{}' ){  
@@ -357,7 +422,6 @@
                     type: 'error',
                 });
             }
-            console.log(status.value)
             if(status.value === 200 || status.value === 201){                
                 router.push({ name: 'events' })
             }

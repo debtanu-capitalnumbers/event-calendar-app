@@ -2,10 +2,13 @@
     <div class="container">
         <Loader v-show="isShowLoader"/>
         <div class="row">
-            <div class="col-sm-3"><h4 class=" mt-2">Add Event</h4></div>
+            <div class="col-sm-3"><h4 class=" mt-2">Edit Event</h4></div>
         </div>
         <div class="p-3 border">
             <form @submit.prevent="handleSubmit">
+                <div class="row p-3 col-md-10">
+                    <img :src="oldImageUrl" alt="{{ form.title }}" :style="{ 'max-width':'150px', 'max-height':'150px'}"/>
+                </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="title" class="control-label">Title</span>
                     <input ref="title" type="text" v-model="form.title" class="form-control border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.title && errors.title[0] }" id="title" name="title" placeholder="Title"  maxlength="100" />
@@ -178,9 +181,9 @@
         cursor: pointer;
         padding-right: 36px;
     }
-    .dp__theme_light {
-        --dp-background-color: unset !important;
-    } 
+    input.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
+        background-color: unset;
+    }
     span.custom-file-label.border-0.border-bottom.form-control.is-invalid {
         background-size: calc(9.75em + 0.375rem) calc(0.75em + 0.375rem);
     }
@@ -192,19 +195,23 @@
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
     import { VueEditor } from "vue3-editor";
-    import imagedefaultUrl from '../../assets/image-placeholder.png'
+    import imagedefaultUrl from '../../assets/image-placeholder.png';
     import moment from 'moment';
     import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
 
     const store = useEventStore()
-    const { handleCreateEvent } = store
-    const { errors, status, isShowLoader } = storeToRefs(store)
+    const { handleShowEvent, handleUpdateEvent } = store
+    const { errors, event, status, isShowLoader } = storeToRefs(store)
 
     const router = useRouter()
     const imageData = ref(null)
     
     const initialState = defineProps({
+        id: {
+            type: String,
+            default: ''
+        },
         title: {
             type: String,
             default: ''
@@ -226,22 +233,23 @@
             default: ''
         },
         event_start_time: {
-            type: String,
-            default: ''
+            type: Object,
+            default: {}
         },
         event_end_time: {
-            type: String,
-            default: ''
+            type: Object,
+            default: {}
         },
         cover_image: {
             type: Object,
             default: {}
         },
+        download_path: {
+            type: String,
+            default: ''
+        },
     })
     
-    onMounted(async () => {
-        errors.value = {};
-    })
     const form = reactive({ ... initialState });  
 
     const titleLengthCount = computed(
@@ -258,41 +266,135 @@
             return (imageData.value !== null) ? imageData.value : imagedefaultUrl
         }
     )
+    const oldImageUrl = computed(
+        () => {
+            return (form.download_path !== null && form.download_path !== "") ? form.download_path : imagedefaultUrl
+            // return (imageData.value !== null) ? imageData.value : ((form.download_path !== null && form.download_path !== "") ? form.download_path : imagedefaultUrl)
+        }
+    )
     
+    onMounted(async () => {
+        errors.value = {};
+        event.value = {};
+        await handleShowEvent(router.currentRoute.value.params.id) 
+        form.id = event.value.id;
+        form.title = event.value.title;
+        form.description = event.value.description;
+        form.location = event.value.location;
+        form.event_category = event.value.event_category;
+        form.event_start_date = event.value.event_start_date;
+        form.event_start_time.hours = event.value.event_start_time_hours;
+        form.event_start_time.minutes = event.value.event_start_time_minutes;
+        form.event_start_time.seconds = event.value.event_start_time_seconds;
+        form.event_end_time.hours = event.value.event_end_time_hours;
+        form.event_end_time.minutes = event.value.event_end_time_minutes;
+        form.event_end_time.seconds = event.value.event_end_time_seconds;
+        form.download_path = event.value.download_path;
+        if(errors.value.common) {
+            notify({
+                title: errors.value.common,
+                type: 'error',
+            });
+        }
+    })
+
     const validateData = (form) => {
         errors.value = {};
+        let errorCount = 0;
+        let firstError = '';
+        let notifyError = '';
         if(form.title === '' || form.title === null){
-            errors.value.title = ["The title field is required."]
+            errors.value.title = ["The title field is required."];
+            if(firstError === "") {
+                firstError = errors.value.title[0];
+            }
+            errorCount ++;
             // title.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.description === '' || form.description === null){
             errors.value.description = ["The description field is required."]
+            if(firstError === "") {
+                firstError = errors.value.description[0];
+            }
+            errorCount ++;
             // description.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.location === '' || form.location === null){
             errors.value.location = ["The location field is required."]
+            if(firstError === "") {
+                firstError = errors.value.location[0];
+            }
+            errorCount ++;
             // event_location.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_category === '' || form.event_category === null){
             errors.value.event_category = ["The event category field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_category[0];
+            }
+            errorCount ++;
             // event_category.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_start_date === '' || form.event_start_date === null){
             errors.value.event_start_date = ["The event start date field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_start_date[0];
+            }
+            errorCount ++;
             // event_start_date.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_start_time === '' || form.event_start_time === null){
             errors.value.event_start_time = ["The event start time field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_start_time[0];
+            }
+            errorCount ++;
             // event_start_time.scrollIntoView({ behavior: 'smooth' });
         }
         if(form.event_end_time === '' || form.event_end_time === null){
             errors.value.event_end_time = ["The event end time field is required."]
+            if(firstError === "") {
+                firstError = errors.value.event_end_time[0];
+            }
+            errorCount ++;
             // event_end_time.scrollIntoView({ behavior: 'smooth' });
         }
+        if(form.event_start_time !== '' && form.event_start_time !== null && form.event_end_time !== '' && form.event_end_time !== null) {            
+            const event_start_time_hours = moment(form.event_start_time).format("h");
+            const event_start_time_minutes = moment(form.event_start_time).format("m");
+            const event_end_time_hours = moment(form.event_end_time).format("h");
+            const event_end_time_minutes = moment(form.event_end_time).format("m");
+            if(event_end_time_hours < event_start_time_hours) {                
+                errors.value.event_end_time = ["The event end time must be greater than start time."]
+                if(firstError === "") {
+                    firstError = errors.value.event_end_time[0];
+                }
+                errorCount ++;
+            } else if(event_end_time_hours === event_start_time_hours && event_end_time_minutes <= event_start_time_minutes) {                
+                errors.value.event_end_time = ["The event end time must be greater than start time."]
+                if(firstError === "") {
+                    firstError = errors.value.event_end_time[0]
+                }
+                errorCount ++;
+            }
+        }
+        
+        notifyError = firstError;
+        if(errorCount >= 2){
+            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
+        }
+        if(notifyError !== ""){
+            notify({
+                title: notifyError,
+                type: 'error',
+            });
+        }
+        // The title field is required. (and 4 more errors)
         window.scrollTo(0,0);
         // event_category.scrollIntoView({ behavior: 'smooth' });
         return
     }
+    
     const updatePhoto = (files) => {
         if (!files.length) {
             imageData.value = form.cover_image = null
@@ -331,12 +433,15 @@
             
         }
     }
+
     const resetForm = () => {
         Object.assign(form, initialState);
     }
+
     const handleSubmit = async () => {
         const formValidation = validateData(form);
         if( JSON.stringify(errors.value) === '{}' ){  
+            console.log(form.event_start_time)
             form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
             form.event_start_time = moment(form.event_start_time).format("hh:mm:ss")
             form.event_end_time = moment(form.event_end_time).format("hh:mm:ss") 
@@ -350,14 +455,15 @@
             formData.append('event_start_time', form.event_start_time);
             formData.append('event_end_time', form.event_end_time);
             if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
-            await handleCreateEvent(formData)            
+            // JSON.stringify
+            await handleUpdateEvent(form.id, formData)            
+            // await handleUpdateEvent(form.id, formData)            
             if(errors.value.common) {
                 notify({
                     title: errors.value.common,
                     type: 'error',
                 });
             }
-            console.log(status.value)
             if(status.value === 200 || status.value === 201){                
                 router.push({ name: 'events' })
             }
