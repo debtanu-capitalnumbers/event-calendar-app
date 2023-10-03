@@ -436,6 +436,7 @@
 
     const resetForm = () => {
         Object.assign(form, initialState);
+        router.push({ name: 'events' });
     }
 
     const handleSubmit = async () => {
@@ -443,8 +444,8 @@
         if( JSON.stringify(errors.value) === '{}' ){  
             console.log(form.event_start_time)
             form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
-            form.event_start_time = moment(form.event_start_time).format("hh:mm:ss")
-            form.event_end_time = moment(form.event_end_time).format("hh:mm:ss") 
+            form.event_start_time = moment(form.event_start_time).format("hh:mm") + ':00'
+            form.event_end_time = moment(form.event_end_time).format("hh:mm") + ':00' 
 
             let formData = new FormData();
             formData.append('title', form.title);

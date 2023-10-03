@@ -1,10 +1,11 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { allEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent } from "../http/event-api";
+import { allEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent } from "../http/event-api";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
   const event = ref({})
+  const eventFile = ref({})
   const errors = ref({});
   const currentPage = ref(1)
   const startPage = ref(1)
@@ -23,10 +24,12 @@ export const useEventStore = defineStore("eventStore", () => {
   const isShowLoader = ref(false)
   const status = ref(200);
 
-  const fetchAllEvents = async (type) => {
-    isShowLoader.value = true;
-    isApiCallComplete.value = false;
-    errors.value = {};
+  const isSuccess = computed(
+    () => (status.value >= 200 && status.value < 300) ? true : false
+  )
+
+  const fetchAllEvents = async (type) => {    
+    initValue()
     let setParams = '?'
     if(type !== 'fresh'){
       setParams = setParams + `page=`+currentPage.value
@@ -66,13 +69,11 @@ export const useEventStore = defineStore("eventStore", () => {
       }
     }
     paginationPages()
-    isShowLoader.value = false;
+    resetValue()
   };
 
   const handleCreateEvent = async (form) => {
-    isShowLoader.value = true;
-    isApiCallComplete.value = false;
-    errors.value = {};
+    initValue()
     try {
       await createEvent(form).then((response) => {
         status.value = response.status;  
@@ -88,13 +89,11 @@ export const useEventStore = defineStore("eventStore", () => {
           errors.value.common = error.response.data.message;
         }
     }  
-    isShowLoader.value = false;  
+    resetValue()  
   };
 
   const handleUpdateEvent = async (id, form) => {
-    isShowLoader.value = true;
-    isApiCallComplete.value = false;
-    errors.value = {};
+    initValue()
     try {
       await updateEvent(id, form).then((response) => {
         status.value = response.status;  
@@ -110,13 +109,11 @@ export const useEventStore = defineStore("eventStore", () => {
           errors.value.common = error.response.data.message;
         }
     }  
-    isShowLoader.value = false;  
+    resetValue()  
   };
 
   const handleShowEvent = async (id) => {
-    isShowLoader.value = true;
-    isApiCallComplete.value = false;
-    errors.value = {};
+    initValue()
     try {
       await showEvent(id).then((response) => {
         status.value = response.status; 
@@ -133,30 +130,61 @@ export const useEventStore = defineStore("eventStore", () => {
           errors.value.common = error.response.data.message;
         }
     }  
-    isShowLoader.value = false;  
+    resetValue()
   };
   
   const handleActiveEvent = async (event) => {
-    isShowLoader.value = true;
-    errors.value = {};
+    initValue()
     const { data: updatedEvent } = await activeEvent(event.id, {
       is_active: event.is_active
     })
-    isShowLoader.value = false;
     const currentEvent = events.value.find(item => item.id === event.id)
     currentEvent.is_active = updatedEvent.data.is_active
+    resetValue()
   }
     
   const handleRemovedEvent = async (event) => {
-    isShowLoader.value = true;
-    isApiCallComplete.value = false;
-    errors.value = {};
+    initValue()
     await removeEvent(event.id)
     const currentEvent = events.value.findIndex(item => item.id === event.id)
     events.value.splice(currentEvent, 1)
     fetchAllEvents('')
   }
 
+  const handleExportEvent = async (form) => {
+    initValue()
+    try {
+      await exportEvent(form).then((response) => {
+        status.value = response.status;  
+        eventFile.value = response.data.url;  
+        errors.value.common = response.data.message;  
+      });
+    } catch (error) {
+        if (error.response && error.response.status) {
+            status.value = error.response.status
+        }
+        if (error.response && status.value === 422) {
+            errors.value = error.response.data.errors;
+        }
+        if(error.response.data.message){
+          errors.value.common = error.response.data.message;
+        }
+    }  
+    resetValue()  
+  };
+
+  const initValue = () => {
+    isShowLoader.value = true;
+    isApiCallComplete.value = false;
+    errors.value = {};
+    eventFile.value = {};
+  };
+
+  const resetValue = () => {
+    isShowLoader.value = false;
+    isApiCallComplete.value = true;
+  };
+  
   const paginationPages = () => { 
     pages.value.length = 0;
     pages.value.push(startPage.value)
@@ -182,64 +210,66 @@ export const useEventStore = defineStore("eventStore", () => {
         pages.value.push(lastPage.value)
     }
     nowCurrentPage.value = currentPage.value
-    isShowLoader.value = false;
-    isApiCallComplete.value = true;
-  }
+    // isShowLoader.value = false;
+    // isApiCallComplete.value = true;
+  };
 
   const handleSort = (column) => {
-    isShowLoader.value = true;
+    // isShowLoader.value = true;
     orderDir.value = orderDir.value * -1
     sortType.value = (orderDir.value === 1) ?'DESC' : 'ASC'
     orderColumn.value = column
     
     fetchAllEvents('')
-  }
+  };
 
   const handleSearch = () => {    
-    isShowLoader.value = true;
+    // isShowLoader.value = true;
     fetchAllEvents('')
-  }
+  };
 
   const handlePerPage = (perpage) => { 
-    isShowLoader.value = true;   
+    // isShowLoader.value = true;   
     perPage.value = perpage
     currentPage.value = 1
     fetchAllEvents('')
-  }
+  };
 
   const switchPage = (page) => {
       currentPage.value = page
       handleSearch()
-  }
+  };
 
   const handlePrev = () => {
       if(startPage.value < currentPage.value){
           currentPage.value--
           handleSearch()
       }
-  }
+  };
 
   const handleNext = () => {
       if(lastPage.value > currentPage.value){
           currentPage.value++
           handleSearch()
       }
-  }
+  };
 
   const clearSearch = () => {
       filterName.value = ""
       handleSearch()
-  }
+  };
 
 
 
   return {
     errors,
     status,
+    isSuccess,
     isApiCallComplete,
     isShowLoader,
     events,
     event,
+    eventFile,
     pages,
     currentPage,
     startPage,
@@ -265,6 +295,7 @@ export const useEventStore = defineStore("eventStore", () => {
     handleUpdateEvent,
     handleActiveEvent,
     handleRemovedEvent,
+    handleExportEvent,
     clearSearch,
     paginationPages,
   };

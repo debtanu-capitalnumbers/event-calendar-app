@@ -2,10 +2,8 @@ import CalendarPage from "../pages/events/CalendarPage.vue"
 import EventsPage from "../pages/events/EventsPage.vue"
 import CreateEventPage from "../pages/events/CreateEventPage.vue"
 import EditEventPage from "../pages/events/EditEventPage.vue"
-import ImportEventCSVPage from "../pages/events/ImportEventCSVPage.vue"
-import ImportEventICSPage from "../pages/events/ImportEventICSPage.vue"
-import ExportEventCSVPage from "../pages/events/ExportEventCSVPage.vue"
-import ExportEventICSPage from "../pages/events/ExportEventICSPage.vue"
+import ImportEventPage from "../pages/events/ImportEventPage.vue"
+import ExportEventPage from "../pages/events/ExportEventPage.vue"
 import LoginPage from "../pages/LoginPage.vue"
 import ResetPasswordPage from "../pages/ResetPasswordPage.vue"
 import ForgotPasswordPage from "../pages/ForgotPasswordPage.vue"
@@ -48,33 +46,17 @@ const routes = [
         }
     },
     {
-        path: "/import-event-from-csv",
-        component: ImportEventCSVPage,
-        name: 'importeventcsv',
+        path: "/import-event",
+        component: ImportEventPage,
+        name: 'importevent',
         meta: {
             auth: true,
         }
     },
     {
-        path: "/import-event-from-ics",
-        component: ImportEventICSPage,
-        name: 'importeventics',
-        meta: {
-            auth: true,
-        }
-    },
-    {
-        path: "/export-event-from-csv",
-        component: ExportEventCSVPage,
-        name: 'exporteventcsv',
-        meta: {
-            auth: true,
-        }
-    },
-    {
-        path: "/export-event-from-ics",
-        component: ExportEventICSPage,
-        name: 'exporteventics',
+        path: "/export-event",
+        component: ExportEventPage,
+        name: 'exportevent',
         meta: {
             auth: true,
         }

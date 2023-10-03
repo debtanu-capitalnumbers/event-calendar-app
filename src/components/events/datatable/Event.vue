@@ -54,8 +54,6 @@
 
     const imageUrl = computed(
         () => {
-            console.log(imagedefaultUrl);
-            console.log(props.event.download_path);
             return (props.event.download_path !== null && props.event.download_path !== "") ? props.event.download_path : imagedefaultUrl
         }
     )
