@@ -140,6 +140,7 @@
     )
     
     const updatePhoto = (files) => {
+        console.log('here')
         if (!files.length) {
             imageData.value = form.import_file = null
             return
@@ -201,7 +202,7 @@
     }
 
     const resetForm = () => {
-        Object.assign(form, initialState);
+        // Object.assign(form, initialState);
         router.push({ name: 'events' });
     }
 
