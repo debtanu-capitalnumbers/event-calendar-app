@@ -197,9 +197,6 @@
     import { useForm } from 'vee-validate';
     import * as yup from 'yup';
 
-    // onMounted(async () => {
-    //     title.value = description.value = location.value = event_category.value = event_start_date.value = event_start_time.value = event_end_time.value = null;
-    // })
     const store = useEventStore()
     const { handleCreateEvent } = store
     const { errorsList, status, isShowLoader } = storeToRefs(store)
@@ -208,7 +205,7 @@
     const imageData = ref(null)
     const cover_image = ref({name: null, data: null})
     const DATE_GREATER_ERROR_MESSAGE = "The event end time must be greater than start time.";
-        // console.log(cover_image);
+    
     // const initialState = defineProps({
     //     cover_image: {
     //         type: Object,
@@ -234,10 +231,7 @@
         const event_start_time_minutes = moment(event_start_time.value).format("m");
         const event_end_time_hours = moment(event_end_time.value).format("h");
         const event_end_time_minutes = moment(event_end_time.value).format("m");
-        // // console.log(event_start_time_hours);
-        // // console.log(event_end_time_hours);
-        // console.log(event_start_time_minutes);
-        // console.log(event_end_time_minutes);
+
         if(event_end_time_hours < event_start_time_hours) {                
             return createError({ path, message: DATE_GREATER_ERROR_MESSAGE });
         } else if(event_end_time_hours === event_start_time_hours && event_end_time_minutes <= event_start_time_minutes) {                
@@ -251,14 +245,23 @@
 
     yup.addMethod(yup.mixed, "isValidDate", isValidDate);
     const { errors, handleSubmit, defineField } = useForm({
+        initialValues: {
+            title: '',
+            description: '',
+            location: '',
+            event_category: '',
+            event_start_date: '',
+            event_start_time: '',
+            event_end_time: '',
+        },
         validationSchema: yup.object({
-            // title: yup.string().required('Title is required'),
-            // description: yup.string().required('Description is required'),
-            // location: yup.string().required('Location is required'),
-            // event_category: yup.string().required('Event category is required'),
-            // event_start_date: yup.string().required("Event start date is required."),
-            // event_start_time: yup.mixed().required('Event start time is required'),
-            // event_end_time: yup.mixed().isValidDate('Event end time is required'),
+            title: yup.string().required('Title is required'),
+            description: yup.string().required('Description is required'),
+            location: yup.string().required('Location is required'),
+            event_category: yup.string().required('Event category is required'),
+            event_start_date: yup.string().required("Event start date is required."),
+            event_start_time: yup.mixed().required('Event start time is required'),
+            event_end_time: yup.mixed().isValidDate('Event end time is required'),
         }),
     });
 
@@ -285,32 +288,51 @@
             return (imageData.value !== null) ? imageData.value : imagedefaultUrl
         }
     )
+    const event_start_date_value = computed(
+        () => (event_start_date.value !== '') ? moment(event_start_date.value).format("YYYY-MM-DD") : ""
+    )
+    const event_start_time_value = computed(
+        () => (event_start_date.value !== '') ? moment(event_start_time.value).format("hh:mm") + ':00' : ""
+    )
+    const event_end_time_value = computed(
+        () => (event_start_date.value !== '') ? moment(event_end_time.value).format("hh:mm") + ':00' : ""
+    )
 
     // Creates a submission handler
     // It validate all fields and doesn't call your function unless all fields are valid
-    const onSubmit = handleSubmit(async (values, actions) => {
+    const onSubmit = handleSubmit(async (values, actions) => {        
         let formData = new FormData();
         formData.append('title', title.value);
         formData.append('description', description.value);
         formData.append('location', location.value);
         formData.append('event_category', event_category.value);
-        formData.append('event_start_date', moment(event_start_date.value).format("YYYY-MM-DD"));
-        formData.append('event_start_time', moment(event_start_time.value).format("hh:mm") + ':00');
-        formData.append('event_end_time', moment(event_end_time.value).format("hh:mm") + ':00');
+        formData.append('event_start_date', event_start_date_value.value);
+        formData.append('event_start_time', event_start_time_value.value);
+        formData.append('event_end_time', event_end_time_value.value);
         if(cover_image.value.data && cover_image.value.name) { formData.append('cover_image', cover_image.value.data, cover_image.value.name); }
-        await handleCreateEvent(formData)            
-        if(errors.value.common) {
+        await handleCreateEvent(formData)         
+        
+        if(errorsList.value.common) {
             notify({
-                title: errors.value.common,
+                title: errorsList.value.common,
                 type: 'error',
             });
         }
         if(status.value === 200 || status.value === 201){                
             router.push({ name: 'events' })
         }
+
         // set multiple fields errors
-        // actions.setErrors({ title: 'bad email' });
-        // alert(JSON.stringify(values, null, 2));
+        actions.setErrors({ 
+            title: errorsList.value.title[0], 
+            description: errorsList.value.description[0], 
+            location: errorsList.value.location[0], 
+            event_category: errorsList.value.event_category[0], 
+            event_start_date: errorsList.value.event_start_date[0], 
+            event_start_time: errorsList.value.event_start_time[0], 
+            event_end_time: errorsList.value.event_end_time[0], 
+        });
+        
         // reset the form
         // actions.resetForm();
     });
