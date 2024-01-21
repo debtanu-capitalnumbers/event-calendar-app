@@ -216,7 +216,7 @@
             if(errors.value.common) {
                 notify({
                     title: errors.value.common,
-                    type: (isSuccess) ? 'success' : 'error',
+                    type: (isSuccess.value) ? 'success' : 'error',
                 });
             }
         } else {

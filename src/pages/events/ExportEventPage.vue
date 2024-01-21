@@ -153,10 +153,12 @@
             if(errors.value.common) {
                 notify({
                     title: errors.value.common,
-                    type: (isSuccess) ? 'success' : 'error',
+                    type: (isSuccess.value) ? 'success' : 'error',
                 });
+            } 
+            if(isSuccess.value){
+                window.location.href = eventFile.value;
             }
-            window.location.href = eventFile.value;
         } else {
             return false;
         }
