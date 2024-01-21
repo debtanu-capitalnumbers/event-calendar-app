@@ -1,3 +1,4 @@
+
 <template>    
     <div class="container">
         <Loader v-show="isShowLoader"/>
@@ -51,8 +52,6 @@
                     <div class="invalid-feedback" v-if="errors.cover_image && errors.cover_image[0]">
                         {{ errors.cover_image && errors.cover_image[0] }}
                     </div>
-                    <!-- <div class="mb-1 d-flex justify-content-left p-0" :style="{ 'backgroundImage': 'url('+ imageUrl +')', 'width':'116px', 'height':'69px'}">
-                    </div> -->
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_category" class="control-label">Event Category</span>
