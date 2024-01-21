@@ -9,4 +9,3 @@ export const forgotPassword = (credentials) => api.post(`${resource}/forgotPassw
 export const resetPassword = (credentials) => api.post(`${resource}/resetPassword`, credentials)
 export const register = (user) => api.post(`${resource}/register`, user)
 export const logout = () => http.post(`${resource}/logout`)
-export const getUser = () => http.get(`${resource}/user`)
