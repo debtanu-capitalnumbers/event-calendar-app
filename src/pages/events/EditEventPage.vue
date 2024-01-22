@@ -349,10 +349,6 @@
                 type: 'error',
             });
         }
-        
-        if(!result && field === 'value'){
-            window.scrollTo(0,0);
-        }
         return result;
     }
 
