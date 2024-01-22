@@ -11,7 +11,7 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="title" class="control-label">Title</span>
-                    <input ref="title" type="text" v-model="form.title" class="form-control border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.title && errors.title[0] }" id="title" name="title" placeholder="Title"  maxlength="100" />
+                    <input ref="title" type="text" v-model="form.title" @blur="validateData('title')" class="form-control border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.title && errors.title[0] }" id="title" name="title" placeholder="Title"  maxlength="100" />
                     
                     <div class="col-md-12">
                         <span class="float-end">{{titleLengthCount}}/100</span>
@@ -22,14 +22,14 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="description" class="control-label">Description</span>                    
-                    <vue-editor ref="description" v-model="form.description" class="form-control border-0" id="description" name="description" placeholder="Description" :class="{ 'is-invalid': errors.description && errors.description[0] }"></vue-editor>
+                    <vue-editor ref="description" v-model="form.description" @blur="validateData('description')" class="form-control border-0" id="description" name="description" placeholder="Description" :class="{ 'is-invalid': errors.description && errors.description[0] }"></vue-editor>
                     <div class="invalid-feedback" v-if="errors.description && errors.description[0]">
                         {{ errors.description && errors.description[0] }}
                     </div>
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="location" class="control-label">Location</span>
-                    <input ref="location" type="text" v-model="form.location" class="form-control border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.location && errors.location[0] }" id="location" name="location" placeholder="location"  maxlength="100" />
+                    <input ref="location" type="text" v-model="form.location" @blur="validateData('location')" class="form-control border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.location && errors.location[0] }" id="location" name="location" placeholder="location"  maxlength="100" />
                     
                     <div class="col-md-12">
                         <span class="float-end">{{locationLengthCount}}/100</span>
@@ -59,7 +59,7 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_category" class="control-label">Event Category</span>
-                    <select ref="event_category" class="form-select border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.event_category && errors.event_category[0] }" aria-label="Default select example" name="event_category" id="event_category" v-model="form.event_category">
+                    <select ref="event_category" class="form-select border-0 border-bottom border-radius-0" @blur="validateData('event_category')" :class="{ 'is-invalid': errors.event_category && errors.event_category[0] }" aria-label="Default select example" name="event_category" id="event_category" v-model="form.event_category">
                         <option value="Library/Books">Library/Books</option>
                         <option value="Community Engagement">Community Engagement</option>
                     </select>
@@ -69,21 +69,21 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_start_date" class="control-label">Start Date</span>
-                    <VueDatePicker ref="event_start_date" v-model="form.event_start_date" :class="{ 'is-invalid': errors.event_start_date && errors.event_start_date[0] }" :enable-time-picker="false" :clearable="false" class="form-control border-0 p-0" id="event_start_date" name="event_start_date"></VueDatePicker>
+                    <VueDatePicker ref="event_start_date" v-model="form.event_start_date" @blur="validateData('event_start_date')" :class="{ 'is-invalid': errors.event_start_date && errors.event_start_date[0] }" :enable-time-picker="false" :clearable="false" class="form-control border-0 p-0" id="event_start_date" name="event_start_date"></VueDatePicker>
                     <div class="invalid-feedback" v-if="errors.event_start_date && errors.event_start_date[0]">
                         {{ errors.event_start_date && errors.event_start_date[0] }}
                     </div>
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_start_time" class="control-label">Start Time</span>
-                    <VueDatePicker ref="event_start_time" v-model="form.event_start_time" :class="{ 'is-invalid': errors.event_start_time && errors.event_start_time[0] }" time-picker :clearable="false" class="form-control border-0 p-0" id="event_start_time" name="event_start_time"></VueDatePicker>
+                    <VueDatePicker ref="event_start_time" v-model="form.event_start_time" @blur="validateData('event_start_time')" :class="{ 'is-invalid': errors.event_start_time && errors.event_start_time[0] }" time-picker :clearable="false" class="form-control border-0 p-0" id="event_start_time" name="event_start_time"></VueDatePicker>
                     <div class="invalid-feedback" v-if="errors.event_start_time && errors.event_start_time[0]">
                         {{ errors.event_start_time && errors.event_start_time[0] }}
                     </div>
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_end_time" class="control-label">End Time</span>
-                    <VueDatePicker ref="event_end_time" v-model="form.event_end_time" :class="{ 'is-invalid': errors.event_end_time && errors.event_end_time[0] }" time-picker :clearable="false" class="form-control border-0 p-0" id="event_end_time" name="event_end_time"></VueDatePicker>
+                    <VueDatePicker ref="event_end_time" v-model="form.event_end_time" @blur="validateData('event_end_time')" :class="{ 'is-invalid': errors.event_end_time && errors.event_end_time[0] }" time-picker :clearable="false" class="form-control border-0 p-0" id="event_end_time" name="event_end_time"></VueDatePicker>
                     <div class="invalid-feedback" v-if="errors.event_end_time && errors.event_end_time[0]">
                         {{ errors.event_end_time && errors.event_end_time[0] }}
                     </div>
@@ -199,6 +199,8 @@
     import moment from 'moment';
     import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
+    import { useVuelidate } from '@vuelidate/core'
+    import { required, helpers } from '@vuelidate/validators'
 
     const store = useEventStore()
     const { handleShowEvent, handleUpdateEvent } = store
@@ -206,51 +208,45 @@
 
     const router = useRouter()
     const imageData = ref(null)
-    
+      
     const initialState = defineProps({
-        id: {
-            type: String,
-            default: ''
-        },
-        title: {
-            type: String,
-            default: ''
-        },
-        description: {
-            type: String,
-            default: ''
-        },
-        location: {
-            type: String,
-            default: ''
-        },
-        event_category: {
-            type: String,
-            default: ''
-        },
-        event_start_date: {
-            type: String,
-            default: ''
-        },
-        event_start_time: {
-            type: Object,
-            default: {}
-        },
-        event_end_time: {
-            type: Object,
-            default: {}
-        },
-        cover_image: {
-            type: Object,
-            default: {}
-        },
-        download_path: {
-            type: String,
-            default: ''
-        },
+        id: { type: String, default: '' },
+        title: { type: String, default: '' },
+        description: { type: String, default: '' },
+        location: { type: String, default: '' },
+        event_category: { type: String, default: '' },
+        event_start_date: { type: String, default: '' },
+        event_start_time: { type: Object, default: {} },
+        event_end_time: { type: Object, default: {} },
+        cover_image: { type: Object, default: {} },
+        download_path: { type: String, default: '' },
     })
     
-    const form = reactive({ ... initialState });  
+    const form = reactive({ ... initialState });
+    const isValidDate = (value) => {                    
+        if(form.event_end_time.hours < form.event_start_time.hours) {              
+            return false;
+        } else if(form.event_end_time.hours === form.event_start_time.hours && form.event_end_time.minutes <= form.event_start_time.minutes) { 
+            return false;
+        } else {
+            return true;
+        }
+    }
+    const rules = computed(() => { 
+        return {
+            id: { required },
+            title: { required: helpers.withMessage('Title is required', required) },
+            description: { required: helpers.withMessage('Description is required', required) },
+            location: { required: helpers.withMessage('Location is required', required) },
+            event_category: { required: helpers.withMessage('Event category is required', required) },
+            event_start_date: { required: helpers.withMessage('Event start date is required', required) },
+            event_start_time: { required: helpers.withMessage('Event start time is required', required) },
+            event_end_time: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
+            cover_image: "",
+            download_path: "",
+        };      
+    });
+    const v$ = useVuelidate(rules, form);
 
     const titleLengthCount = computed(
         () => (form.title !== null) ? form.title.length : 0
@@ -262,15 +258,10 @@
         () => (form.cover_image !== null) ? form.cover_image.name : "Choose file"
     )
     const imageUrl = computed(
-        () => {
-            return (imageData.value !== null) ? imageData.value : imagedefaultUrl
-        }
+        () => (imageData.value !== null) ? imageData.value : imagedefaultUrl
     )
     const oldImageUrl = computed(
-        () => {
-            return (form.download_path !== null && form.download_path !== "") ? form.download_path : imagedefaultUrl
-            // return (imageData.value !== null) ? imageData.value : ((form.download_path !== null && form.download_path !== "") ? form.download_path : imagedefaultUrl)
-        }
+        () => (form.download_path !== null && form.download_path !== "") ? form.download_path : imagedefaultUrl
     )
     
     onMounted(async () => {
@@ -290,110 +281,7 @@
         form.event_end_time.minutes = event.value.event_end_time_minutes;
         form.event_end_time.seconds = event.value.event_end_time_seconds;
         form.download_path = event.value.download_path;
-        if(errors.value.common) {
-            notify({
-                title: errors.value.common,
-                type: 'error',
-            });
-        }
     })
-
-    const validateData = (form) => {
-        errors.value = {};
-        let errorCount = 0;
-        let firstError = '';
-        let notifyError = '';
-        if(form.title === '' || form.title === null){
-            errors.value.title = ["The title field is required."];
-            if(firstError === "") {
-                firstError = errors.value.title[0];
-            }
-            errorCount ++;
-            // title.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.description === '' || form.description === null){
-            errors.value.description = ["The description field is required."]
-            if(firstError === "") {
-                firstError = errors.value.description[0];
-            }
-            errorCount ++;
-            // description.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.location === '' || form.location === null){
-            errors.value.location = ["The location field is required."]
-            if(firstError === "") {
-                firstError = errors.value.location[0];
-            }
-            errorCount ++;
-            // event_location.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_category === '' || form.event_category === null){
-            errors.value.event_category = ["The event category field is required."]
-            if(firstError === "") {
-                firstError = errors.value.event_category[0];
-            }
-            errorCount ++;
-            // event_category.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_start_date === '' || form.event_start_date === null){
-            errors.value.event_start_date = ["The event start date field is required."]
-            if(firstError === "") {
-                firstError = errors.value.event_start_date[0];
-            }
-            errorCount ++;
-            // event_start_date.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_start_time === '' || form.event_start_time === null){
-            errors.value.event_start_time = ["The event start time field is required."]
-            if(firstError === "") {
-                firstError = errors.value.event_start_time[0];
-            }
-            errorCount ++;
-            // event_start_time.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_end_time === '' || form.event_end_time === null){
-            errors.value.event_end_time = ["The event end time field is required."]
-            if(firstError === "") {
-                firstError = errors.value.event_end_time[0];
-            }
-            errorCount ++;
-            // event_end_time.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_start_time !== '' && form.event_start_time !== null && form.event_end_time !== '' && form.event_end_time !== null) {            
-            const event_start_time_hours = moment(form.event_start_time).format("h");
-            const event_start_time_minutes = moment(form.event_start_time).format("m");
-            const event_end_time_hours = moment(form.event_end_time).format("h");
-            const event_end_time_minutes = moment(form.event_end_time).format("m");
-            if(event_end_time_hours < event_start_time_hours) {                
-                errors.value.event_end_time = ["The event end time must be greater than start time."]
-                if(firstError === "") {
-                    firstError = errors.value.event_end_time[0];
-                }
-                errorCount ++;
-            } else if(event_end_time_hours === event_start_time_hours && event_end_time_minutes <= event_start_time_minutes) {                
-                errors.value.event_end_time = ["The event end time must be greater than start time."]
-                if(firstError === "") {
-                    firstError = errors.value.event_end_time[0]
-                }
-                errorCount ++;
-            }
-        }
-        
-        notifyError = firstError;
-        if(errorCount >= 2){
-            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
-        }
-        if(notifyError !== ""){
-            notify({
-                title: notifyError,
-                type: 'error',
-            });
-        }
-        // The title field is required. (and 4 more errors)
-        window.scrollTo(0,0);
-        // event_category.scrollIntoView({ behavior: 'smooth' });
-        return
-    }
     
     const updatePhoto = (files) => {
         if (!files.length) {
@@ -434,11 +322,43 @@
         Object.assign(form, initialState);
         router.push({ name: 'events' });
     }
+    const validateData = async (field) => {
+        errors.value = {};
+        let errorCount = 0;
+        let notifyError = '';
+        let result = true;
+        if(field !== 'value'){
+            result = await v$.value[field].$validate();
+        } else {
+            result = await v$.value.$validate();
+        }
+        v$.value.$errors.forEach((element, index) => {
+            if(index == 0){
+                notifyError = element.$message;
+            }
+            errors.value[element.$property] = [element.$message];
+            errorCount++;
+        });
+        
+        if(errorCount >= 2){
+            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
+        }
+        if(notifyError !== ""){
+            notify({
+                title: notifyError,
+                type: 'error',
+            });
+        }
+        
+        if(!result && field === 'value'){
+            window.scrollTo(0,0);
+        }
+        return result;
+    }
 
     const handleSubmit = async () => {
-        const formValidation = validateData(form);
-        if( JSON.stringify(errors.value) === '{}' ){  
-            console.log(form.event_start_time)
+        const result = await validateData('value');
+        if( result ){ 
             form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
             form.event_start_time = moment(form.event_start_time).format("hh:mm") + ':00'
             form.event_end_time = moment(form.event_end_time).format("hh:mm") + ':00' 
@@ -452,9 +372,7 @@
             formData.append('event_start_time', form.event_start_time);
             formData.append('event_end_time', form.event_end_time);
             if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
-            // JSON.stringify
-            await handleUpdateEvent(form.id, formData)            
-            // await handleUpdateEvent(form.id, formData)            
+            await handleUpdateEvent(form.id, formData)                 
             if(errors.value.common) {
                 notify({
                     title: errors.value.common,
@@ -464,8 +382,6 @@
             if(status.value === 200 || status.value === 201){                
                 router.push({ name: 'events' })
             }
-        } else {
-            return false;
         }
     }
 </script>
