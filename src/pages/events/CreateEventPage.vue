@@ -220,26 +220,26 @@
 
     // Using custom test method
     function isValidDate(message) {
-    return this.test("isValidDate", message, function (value) {
-        const { path, createError } = this;
+        return this.test("isValidDate", message, function (value) {
+            const { path, createError } = this;
 
-        if (!value) {
-        return createError({ path, message });
-        }
-                
-        const event_start_time_hours = moment(event_start_time.value).format("h");
-        const event_start_time_minutes = moment(event_start_time.value).format("m");
-        const event_end_time_hours = moment(event_end_time.value).format("h");
-        const event_end_time_minutes = moment(event_end_time.value).format("m");
+            if (!value) {
+            return createError({ path, message });
+            }
+                    
+            const event_start_time_hours = moment(event_start_time.value).format("h");
+            const event_start_time_minutes = moment(event_start_time.value).format("m");
+            const event_end_time_hours = moment(event_end_time.value).format("h");
+            const event_end_time_minutes = moment(event_end_time.value).format("m");
 
-        if(event_end_time_hours < event_start_time_hours) {                
-            return createError({ path, message: DATE_GREATER_ERROR_MESSAGE });
-        } else if(event_end_time_hours === event_start_time_hours && event_end_time_minutes <= event_start_time_minutes) {                
-            return createError({ path, message: DATE_GREATER_ERROR_MESSAGE });
-        }
+            if(event_end_time_hours < event_start_time_hours) {                
+                return createError({ path, message: DATE_GREATER_ERROR_MESSAGE });
+            } else if(event_end_time_hours === event_start_time_hours && event_end_time_minutes <= event_start_time_minutes) {                
+                return createError({ path, message: DATE_GREATER_ERROR_MESSAGE });
+            }
 
-        return true;
-    });
+            return true;
+        });
     }
 
 
@@ -259,7 +259,7 @@
             description: yup.string().required('Description is required'),
             location: yup.string().required('Location is required'),
             event_category: yup.string().required('Event category is required'),
-            event_start_date: yup.string().required("Event start date is required."),
+            event_start_date: yup.string().required("Event start date is required"),
             event_start_time: yup.mixed().required('Event start time is required'),
             event_end_time: yup.mixed().isValidDate('Event end time is required'),
         }),
@@ -284,9 +284,7 @@
         () => (cover_image.value !== null) ? cover_image.value.name : "Choose file"
     )
     const imageUrl = computed(
-        () => {
-            return (imageData.value !== null) ? imageData.value : imagedefaultUrl
-        }
+        () => (imageData.value !== null) ? imageData.value : imagedefaultUrl
     )
     const event_start_date_value = computed(
         () => (event_start_date.value !== '') ? moment(event_start_date.value).format("YYYY-MM-DD") : ""
