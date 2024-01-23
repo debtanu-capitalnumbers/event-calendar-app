@@ -18,14 +18,14 @@
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_start_date" class="control-label">Start Date</span>
-                    <VueDatePicker ref="event_start_date" v-model="form.event_start_date" :class="{ 'is-invalid': errors.event_start_date && errors.event_start_date[0] }" :enable-time-picker="false" :clearable="false" class="form-control border-0 p-0" id="event_start_date" name="event_start_date"></VueDatePicker>
+                    <VueDatePicker ref="event_start_date" v-model="form.event_start_date" @blur="validateData('event_start_date')" :class="{ 'is-invalid': errors.event_start_date && errors.event_start_date[0] }" :enable-time-picker="false" :clearable="false" class="form-control border-0 p-0" id="event_start_date" name="event_start_date"></VueDatePicker>
                     <div class="invalid-feedback" v-if="errors.event_start_date && errors.event_start_date[0]">
                         {{ errors.event_start_date && errors.event_start_date[0] }}
                     </div>
                 </div>
                 <div class="row p-3 col-md-10 form-group required">
                     <span for="event_end_date" class="control-label">Start Date</span>
-                    <VueDatePicker ref="event_end_date" v-model="form.event_end_date" :class="{ 'is-invalid': errors.event_end_date && errors.event_end_date[0] }" :enable-time-picker="false" :clearable="false" class="form-control border-0 p-0" id="event_end_date" name="event_end_date"></VueDatePicker>
+                    <VueDatePicker ref="event_end_date" v-model="form.event_end_date" @blur="validateData('event_end_date')" :class="{ 'is-invalid': errors.event_end_date && errors.event_end_date[0] }" :enable-time-picker="false" :clearable="false" class="form-control border-0 p-0" id="event_end_date" name="event_end_date"></VueDatePicker>
                     <div class="invalid-feedback" v-if="errors.event_end_date && errors.event_end_date[0]">
                         {{ errors.event_end_date && errors.event_end_date[0] }}
                     </div>
