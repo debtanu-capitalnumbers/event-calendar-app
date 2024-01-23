@@ -57,8 +57,8 @@
     import moment from 'moment';
     import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
-    import { useVuelidate } from '@vuelidate/core'
-    import { required, helpers } from '@vuelidate/validators'
+    import { useVuelidate } from '@vuelidate/core';
+    import { required, helpers } from '@vuelidate/validators';
 
     const store = useEventStore()
     const { handleExportEvent } = store
@@ -97,7 +97,7 @@
     }
     const rules = computed(() => { 
         return {
-            export_type: { required: helpers.withMessage('Event expost type is required', required) },
+            export_type: { required: helpers.withMessage('Event export type is required', required) },
             event_start_date: { required: helpers.withMessage('Event start date is required', required) },
             event_end_date: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
         };      

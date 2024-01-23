@@ -194,8 +194,8 @@
     import moment from 'moment';
     import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
-    import { useVuelidate } from '@vuelidate/core'
-    import { required, helpers } from '@vuelidate/validators'
+    import { useVuelidate } from '@vuelidate/core';
+    import { required, helpers } from '@vuelidate/validators';
 
     const store = useEventStore()
     const { handleCreateEvent } = store

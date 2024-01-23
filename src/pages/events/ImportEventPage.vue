@@ -109,8 +109,9 @@
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
-    import imagedefaultUrl from '../../assets/image-placeholder.png';
     import { notify } from "@kyvg/vue3-notification";
+    import { useVuelidate } from '@vuelidate/core';
+    import { required, helpers } from '@vuelidate/validators';
 
     const store = useEventStore()
     const { handleImportEvent } = store
@@ -134,6 +135,13 @@
         errors.value = {};
     })
     const form = reactive({ ... initialState });  
+    const rules = computed(() => { 
+        return {
+            import_type: { required: helpers.withMessage('Event Import type is required', required) },
+            import_file: { required: helpers.withMessage('Event import file is required', required) },
+        };      
+    });
+    const v$ = useVuelidate(rules, form);
 
     const computedinputFileLabel = computed(
         () => (form.import_file !== null) ? form.import_file.name : "Choose file"
@@ -165,27 +173,24 @@
         }
     }
     
-    const validateData = (form) => {
+    const validateData = async (field) => {
         errors.value = {};
         let errorCount = 0;
-        let firstError = '';
         let notifyError = '';
-        if(JSON.stringify(form.import_file) === '{}'){
-            errors.value.import_file = ["The event import file is required."];
-            if(firstError === "") {
-                firstError = errors.value.import_file[0];
-            }
-            errorCount ++;
+        let result = true;
+        if(field !== 'value'){
+            result = await v$.value[field].$validate();
+        } else {
+            result = await v$.value.$validate();
         }
-        else if(form.import_file.name === '' || form.import_file.name === null){
-            errors.value.import_file = ["The event import file is required."];
-            if(firstError === "") {
-                firstError = errors.value.import_file[0];
+        v$.value.$errors.forEach((element, index) => {
+            if(index == 0){
+                notifyError = element.$message;
             }
-            errorCount ++;
-        }
+            errors.value[element.$property] = [element.$message];
+            errorCount++;
+        });
         
-        notifyError = firstError;
         if(errorCount >= 2){
             notifyError += ' (and ' + (-- errorCount) + ' more errors)';
         }
@@ -195,10 +200,7 @@
                 type: 'error',
             });
         }
-        // The title field is required. (and 4 more errors)
-        window.scrollTo(0,0);
-        // event_category.scrollIntoView({ behavior: 'smooth' });
-        return
+        return result;
     }
 
     const resetForm = () => {
@@ -207,8 +209,8 @@
     }
 
     const handleSubmit = async () => {
-        const formValidation = validateData(form);
-        if( JSON.stringify(errors.value) === '{}' ){  
+        const result = await validateData('value');
+        if( result ){  
             let formData = new FormData();
             formData.append('import_type', form.import_type);
             if(form.import_file.data && form.import_file.name) { formData.append('import_file', form.import_file.data, form.import_file.name); }
@@ -219,8 +221,6 @@
                     type: (isSuccess.value) ? 'success' : 'error',
                 });
             }
-        } else {
-            return false;
         }
     }
 </script>
