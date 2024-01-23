@@ -228,7 +228,6 @@
     }
     const rules = computed(() => { 
         return {
-            id: { required },
             title: { required: helpers.withMessage('Title is required', required) },
             description: { required: helpers.withMessage('Description is required', required) },
             location: { required: helpers.withMessage('Location is required', required) },

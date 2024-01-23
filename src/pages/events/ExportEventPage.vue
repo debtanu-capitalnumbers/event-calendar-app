@@ -57,6 +57,8 @@
     import moment from 'moment';
     import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
+    import { useVuelidate } from '@vuelidate/core'
+    import { required, helpers } from '@vuelidate/validators'
 
     const store = useEventStore()
     const { handleExportEvent } = store
@@ -84,42 +86,47 @@
         errors.value = {};
     })
     const form = reactive({ ... initialState });  
+    const isValidDate = (value) => {          
+        const event_start_date = moment(form.event_start_date);
+        const event_end_date = moment(form.event_end_date);          
+        if(event_end_date <= event_start_date) {              
+            return false;
+        } else {
+            return true;
+        }
+    }
+    const rules = computed(() => { 
+        return {
+            export_type: { required: helpers.withMessage('Event expost type is required', required) },
+            event_start_date: { required: helpers.withMessage('Event start date is required', required) },
+            event_end_date: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
+        };      
+    });
+    const v$ = useVuelidate(rules, form);
+
+    const resetForm = () => {
+        Object.assign(form, initialState);
+        router.push({ name: 'events' });
+    }
     
-    const validateData = (form) => {
+    const validateData = async (field) => {
         errors.value = {};
         let errorCount = 0;
-        let firstError = '';
         let notifyError = '';
+        let result = true;
+        if(field !== 'value'){
+            result = await v$.value[field].$validate();
+        } else {
+            result = await v$.value.$validate();
+        }
+        v$.value.$errors.forEach((element, index) => {
+            if(index == 0){
+                notifyError = element.$message;
+            }
+            errors.value[element.$property] = [element.$message];
+            errorCount++;
+        });
         
-        if(form.event_start_date === '' || form.event_start_date === null){
-            errors.value.event_start_date = ["The event start date field is required."]
-            if(firstError === "") {
-                firstError = errors.value.event_start_date[0];
-            }
-            errorCount ++;
-            // event_start_date.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_end_date === '' || form.event_end_date === null){
-            errors.value.event_end_date = ["The event end date field is required."]
-            if(firstError === "") {
-                firstError = errors.value.event_end_date[0];
-            }
-            errorCount ++;
-            // event_start_date.scrollIntoView({ behavior: 'smooth' });
-        }
-        if(form.event_start_date !== '' && form.event_start_date !== null && form.event_end_date !== '' && form.event_end_date !== null) {            
-            const event_start_date = moment(form.event_start_date);
-            const event_end_date = moment(form.event_end_date);
-            if(event_end_date <= event_start_date) {                
-                errors.value.event_end_time = ["The event end date must be greater than start date."]
-                if(firstError === "") {
-                    firstError = errors.value.event_end_time[0];
-                }
-                errorCount ++;
-            }
-        }
-        
-        notifyError = firstError;
         if(errorCount >= 2){
             notifyError += ' (and ' + (-- errorCount) + ' more errors)';
         }
@@ -129,19 +136,12 @@
                 type: 'error',
             });
         }
-        window.scrollTo(0,0);
-        // export_type.scrollIntoView({ behavior: 'smooth' });
-        return
-    }
-
-    const resetForm = () => {
-        Object.assign(form, initialState);
-        router.push({ name: 'events' });
+        return result;
     }
 
     const handleSubmit = async () => {
-        const formValidation = validateData(form);
-        if( JSON.stringify(errors.value) === '{}' ){  
+        const result = await validateData('value');
+        if( result ){  
             form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
             form.event_end_date = moment(form.event_end_date).format("YYYY-MM-DD")
 
@@ -159,8 +159,6 @@
             if(isSuccess.value){
                 window.location.href = eventFile.value;
             }
-        } else {
-            return false;
         }
     }
 </script>
