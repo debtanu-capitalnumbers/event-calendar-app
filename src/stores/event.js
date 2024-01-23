@@ -8,7 +8,6 @@ export const useEventStore = defineStore("eventStore", () => {
   const event = ref({})
   const eventFile = ref({})
   const errors = ref({});
-  const errorsList = ref({});
   const currentPage = ref(1)
   const startPage = ref(1)
   const lastPage = ref(1)
@@ -106,10 +105,10 @@ export const useEventStore = defineStore("eventStore", () => {
             status.value = error.response.status
         }
         if (error.response && status.value === 422) {
-            errorsList.value = error.response.data.errors;
+            errors.value = error.response.data.errors;
         }
         if(error.response.data.message){
-          errorsList.value.common = error.response.data.message;
+            errors.value.common = error.response.data.message;
         }
     }  
     resetValue()  
@@ -309,7 +308,6 @@ export const useEventStore = defineStore("eventStore", () => {
 
   return {
     errors,
-    errorsList,
     status,
     isSuccess,
     isApiCallComplete,
