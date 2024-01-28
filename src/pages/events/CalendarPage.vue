@@ -22,7 +22,7 @@
 
     const store = useEventStore()
     const { fetchCalendarEvents } = store
-    const { calendarEvents, isShowLoader, errors } = storeToRefs(store)
+    const { calendarEvents, isShowLoader } = storeToRefs(store)
 
     const handleDateClick = async () => {
         console.log('handleDateClick');
@@ -41,12 +41,6 @@
     onMounted(async () => {
         await fetchCalendarEvents('fresh')
         calendarOptions.events = calendarEvents.value
-        if(errors.value.common) {
-            notify({
-                title: errors.value.common,
-                type: 'error',
-            });
-        }
     })
 
     

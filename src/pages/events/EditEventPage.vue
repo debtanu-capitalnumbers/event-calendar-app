@@ -187,7 +187,7 @@
     }
 </style>
 <script setup>
-    import { onMounted, reactive, computed, ref } from "vue";
+    import { onMounted, ref ,reactive, computed } from "vue";
     import { storeToRefs } from "pinia";
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
@@ -202,8 +202,8 @@
 
     const store = useEventStore()
     const { handleShowEvent, handleUpdateEvent } = store
-    const { errors, event, status, isShowLoader } = storeToRefs(store)
-
+    const { event, status, isShowLoader } = storeToRefs(store)
+    const errors = ref({})
     const router = useRouter()
     const imageData = ref(null)
       
@@ -366,13 +366,7 @@
             formData.append('event_start_time', form.event_start_time);
             formData.append('event_end_time', form.event_end_time);
             if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
-            await handleUpdateEvent(form.id, formData)                 
-            if(errors.value.common) {
-                notify({
-                    title: errors.value.common,
-                    type: 'error',
-                });
-            }
+            await handleUpdateEvent(form.id, formData)      
             if(status.value === 200 || status.value === 201){                
                 router.push({ name: 'events' })
             }

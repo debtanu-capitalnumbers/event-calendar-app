@@ -49,7 +49,7 @@
     }
 </style>
 <script setup>
-    import { onMounted, reactive, computed, ref } from "vue";
+    import { onMounted, ref ,reactive, computed } from "vue";
     import { storeToRefs } from "pinia";
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
@@ -62,8 +62,8 @@
 
     const store = useEventStore()
     const { handleExportEvent } = store
-    const { errors, status, isSuccess, isShowLoader, eventFile } = storeToRefs(store)
-
+    const { status, isSuccess, isShowLoader, eventFile } = storeToRefs(store)
+    const errors = ref({})
     const router = useRouter()
     const imageData = ref(null)
     
@@ -149,13 +149,7 @@
             formData.append('export_type', form.export_type);
             formData.append('event_start_date', form.event_start_date);
             formData.append('event_end_date', form.event_end_date);
-            await handleExportEvent(formData)            
-            if(errors.value.common) {
-                notify({
-                    title: errors.value.common,
-                    type: (isSuccess.value) ? 'success' : 'error',
-                });
-            } 
+            await handleExportEvent(formData)  
             if(isSuccess.value){
                 window.location.href = eventFile.value;
             }

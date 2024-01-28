@@ -1,13 +1,13 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { allEvents, allCalendarEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent, importEvent } from "../http/event-api";
+import { notify } from "@kyvg/vue3-notification";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
   const calendarEvents = ref([])
   const event = ref({})
   const eventFile = ref({})
-  const errors = ref({});
   const currentPage = ref(1)
   const startPage = ref(1)
   const lastPage = ref(1)
@@ -59,15 +59,8 @@ export const useEventStore = defineStore("eventStore", () => {
       currentPage.value = 1;
       lastPage.value = 1;
       totalRecord.value = 0;
-      if (error.response && error.response.status) {
-        status.value = error.response.status
-      }
-      if (error.response && status.value === 422) {
-        errors.value = error.response.data.errors;
-      }
-      if(error.response.data.message){
-        errors.value.common = error.response.data.message;
-      }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }
     paginationPages()
     resetValue()
@@ -81,15 +74,8 @@ export const useEventStore = defineStore("eventStore", () => {
       });
     } catch (error) {
       calendarEvents.value = [];
-      if (error.response && error.response.status) {
-        status.value = error.response.status
-      }
-      if (error.response && status.value === 422) {
-        errors.value = error.response.data.errors;
-      }
-      if(error.response.data.message){
-        errors.value.common = error.response.data.message;
-      }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }
     resetValue()
   };
@@ -101,15 +87,8 @@ export const useEventStore = defineStore("eventStore", () => {
         status.value = response.status;  
       });
     } catch (error) {
-        if (error.response && error.response.status) {
-            status.value = error.response.status
-        }
-        if (error.response && status.value === 422) {
-            errors.value = error.response.data.errors;
-        }
-        if(error.response.data.message){
-            errors.value.common = error.response.data.message;
-        }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }  
     resetValue()  
   };
@@ -121,15 +100,8 @@ export const useEventStore = defineStore("eventStore", () => {
         status.value = response.status;  
       });
     } catch (error) {
-        if (error.response && error.response.status) {
-            status.value = error.response.status
-        }
-        if (error.response && status.value === 422) {
-            errors.value = error.response.data.errors;
-        }
-        if(error.response.data.message){
-          errors.value.common = error.response.data.message;
-        }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }  
     resetValue()  
   };
@@ -142,15 +114,8 @@ export const useEventStore = defineStore("eventStore", () => {
         event.value = response.data.data; 
       });
     } catch (error) {
-        if (error.response && error.response.status) {
-            status.value = error.response.status
-        }
-        if (error.response && status.value === 422) {
-            errors.value = error.response.data.errors;
-        }
-        if(error.response.data.message){
-          errors.value.common = error.response.data.message;
-        }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }  
     resetValue()
   };
@@ -179,18 +144,11 @@ export const useEventStore = defineStore("eventStore", () => {
       await exportEvent(form).then((response) => {
         status.value = response.status;  
         eventFile.value = response.data.url;  
-        errors.value.common = response.data.message;  
+        notify({ title: response.data.message, type: 'success' }); 
       });
     } catch (error) {
-        if (error.response && error.response.status) {
-            status.value = error.response.status
-        }
-        if (error.response && status.value === 422) {
-            errors.value = error.response.data.errors;
-        }
-        if(error.response.data.message){
-          errors.value.common = error.response.data.message;
-        }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }  
     resetValue()  
   };
@@ -200,18 +158,11 @@ export const useEventStore = defineStore("eventStore", () => {
     try {
       await importEvent(form).then((response) => {
         status.value = response.status; 
-        errors.value.common = response.data.message;  
+        notify({ title: response.data.message, type: 'success' });  
       });
     } catch (error) {
-        if (error.response && error.response.status) {
-            status.value = error.response.status
-        }
-        if (error.response && status.value === 422) {
-            errors.value = error.response.data.errors;
-        }
-        if(error.response.data.message){
-          errors.value.common = error.response.data.message;
-        }
+      status.value = error.response.status
+      notify({ title: error.response.data.message, type: 'error' });
     }  
     resetValue()  
   };
@@ -219,7 +170,6 @@ export const useEventStore = defineStore("eventStore", () => {
   const initValue = () => {
     isShowLoader.value = true;
     isApiCallComplete.value = false;
-    errors.value = {};
     eventFile.value = {};
     calendarEvents.value = [];
     events.value = [];
@@ -307,7 +257,6 @@ export const useEventStore = defineStore("eventStore", () => {
 
 
   return {
-    errors,
     status,
     isSuccess,
     isApiCallComplete,

@@ -104,7 +104,7 @@
     }
 </style>
 <script setup>
-    import { onMounted, reactive, computed, ref } from "vue";
+    import { onMounted, ref ,reactive, computed } from "vue";
     import { storeToRefs } from "pinia";
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
@@ -115,8 +115,8 @@
 
     const store = useEventStore()
     const { handleImportEvent } = store
-    const { errors, status, isShowLoader, isSuccess } = storeToRefs(store)
-
+    const { status, isShowLoader, isSuccess } = storeToRefs(store)
+    const errors = ref({})
     const router = useRouter()
     const imageData = ref(null)
     
@@ -157,7 +157,7 @@
             const type = files[0].type
             
             if(type !== "text/calendar" && type !== "text/csv"){
-                errors.value.import_file = ["Only support JPG/JPEG/PNG format."]
+                errors.value.import_file = ["Only support ICS/CSV format."]
                 return
             }
             if(size > (1024*1024*4)){
@@ -214,13 +214,7 @@
             let formData = new FormData();
             formData.append('import_type', form.import_type);
             if(form.import_file.data && form.import_file.name) { formData.append('import_file', form.import_file.data, form.import_file.name); }
-            await handleImportEvent(formData)        
-            if(errors.value.common) {
-                notify({
-                    title: errors.value.common,
-                    type: (isSuccess.value) ? 'success' : 'error',
-                });
-            }
+            await handleImportEvent(formData) 
         }
     }
 </script>
