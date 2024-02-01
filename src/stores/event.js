@@ -12,7 +12,6 @@ export const useEventStore = defineStore("eventStore", () => {
   const startPage = ref(1)
   const lastPage = ref(1)
   const totalRecord = ref(0)
-  const pages = ref([])
   const perPage = ref(10)
   const filterName = ref('')
   const orderColumn = ref('event_start_date_time')
@@ -62,7 +61,6 @@ export const useEventStore = defineStore("eventStore", () => {
       status.value = error.response.status
       notify({ title: error.response.data.message, type: 'error' });
     }
-    paginationPages()
     resetValue()
   };
 
@@ -180,34 +178,7 @@ export const useEventStore = defineStore("eventStore", () => {
     isApiCallComplete.value = true;
   };
   
-  const paginationPages = () => { 
-    pages.value.length = 0;
-    pages.value.push(startPage.value)
-    if( ((currentPage.value - 1) > (startPage.value + 2)) && lastPage.value > 6){   
-      pages.value.push('...')  
-      startPageLink.value = ((currentPage.value - 1) < (lastPage.value - 4)) ? (currentPage.value - 1) : (lastPage.value - 4);
-    } else {
-        startPageLink.value = startPage.value+1;
-    }
-    if( ((currentPage.value + 1) < (lastPage.value - 2)) && lastPage.value > 6){  
-        endPageLink.value = ((currentPage.value + 1) > (startPage.value + 4)) ? (currentPage.value + 1) : (startPage.value + 4);
-        for (let index = startPageLink.value; index <= endPageLink.value; index++) {
-          pages.value.push(index)
-        }
-        pages.value.push('...')
-    } else { 
-        endPageLink.value = lastPage.value - 1;
-        for (let index = startPageLink.value; index <= endPageLink.value; index++) {
-          pages.value.push(index)
-        }
-    }
-    if(startPage.value !== lastPage.value){
-        pages.value.push(lastPage.value)
-    }
-    nowCurrentPage.value = currentPage.value
-    // isShowLoader.value = false;
-    // isApiCallComplete.value = true;
-  };
+  
 
   const handleSort = (column) => {
     // isShowLoader.value = true;
@@ -218,7 +189,7 @@ export const useEventStore = defineStore("eventStore", () => {
     fetchAllEvents('')
   };
 
-  const handleSearch = () => {    
+  const handleSearch = async () => {    
     // isShowLoader.value = true;
     fetchAllEvents('')
   };
@@ -228,26 +199,7 @@ export const useEventStore = defineStore("eventStore", () => {
     perPage.value = perpage
     currentPage.value = 1
     fetchAllEvents('')
-  };
-
-  const switchPage = (page) => {
-      currentPage.value = page
-      handleSearch()
-  };
-
-  const handlePrev = () => {
-      if(startPage.value < currentPage.value){
-          currentPage.value--
-          handleSearch()
-      }
-  };
-
-  const handleNext = () => {
-      if(lastPage.value > currentPage.value){
-          currentPage.value++
-          handleSearch()
-      }
-  };
+  };  
 
   const clearSearch = () => {
       filterName.value = ""
@@ -265,7 +217,6 @@ export const useEventStore = defineStore("eventStore", () => {
     calendarEvents,
     event,
     eventFile,
-    pages,
     currentPage,
     startPage,
     lastPage,
@@ -283,9 +234,6 @@ export const useEventStore = defineStore("eventStore", () => {
     handleSort,
     handleSearch,
     handlePerPage,
-    switchPage,
-    handlePrev,
-    handleNext,
     handleCreateEvent,
     handleShowEvent,
     handleUpdateEvent,
@@ -294,7 +242,6 @@ export const useEventStore = defineStore("eventStore", () => {
     handleImportEvent,
     handleExportEvent,
     clearSearch,
-    paginationPages,
   };
 },
 {

@@ -4,23 +4,19 @@
             <span class="justify-content-left">Showing {{startingShowingRecord}} to {{endingShowingRecord}} of {{totalRecord}} entries</span>
         </div>
         <div class="col-sm-4 col-md-8">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" :class="{ disabled: isFirstPage}"><a class="page-link" href="#" @click.prevent="handlePrev">Previous</a></li>
-                <li class="page-item" :class="{ active: nowCurrentPage === page }" v-for="(page, index) in pages" :key="index">
-                    <a v-if=" page !== '...'" class="page-link" href="#" @click.prevent="switchPage(page)">{{ page }}</a>                    
-                    <a v-else class="page-link" >{{ page }}</a>
-                </li>
-                <li class="page-item" :class="{ disabled: isLastPage}"><a class="page-link" href="#" @click.prevent="handleNext">Next</a></li>
-            </ul>
+            <paginate   :page-count=lastPage    :click-handler="clickCallback"></paginate>
         </div>
     </div>
 </template>
 
-<style scoped>
-    .page-link:focus{
+<style>
+    .page-item:focus{
         box-shadow: none !important;
     }
-    .page-link:hover{
+    .page-item{
+        cursor: pointer !important;
+    }
+    .page-item:hover{
         background-color: white !important;
     }
 </style>
@@ -28,17 +24,16 @@
     import { computed } from "vue";
     import { storeToRefs } from 'pinia';
     import { useEventStore } from "../../../stores/event";
+    import Paginate from "vuejs-paginate-next";
 
     const store = useEventStore()
-    const { handleNext, handlePrev, switchPage } = store
-    const { isApiCallComplete, pages, startPage, currentPage, lastPage, perPage, totalRecord, nowCurrentPage } = storeToRefs(store)
-
-    const isFirstPage = computed(
-        () => (startPage.value === currentPage.value) ? true : false
-    )
-    const isLastPage = computed(
-        () => (lastPage.value === currentPage.value) ? true : false
-    )
+    const { handleSearch } = store
+    const { isApiCallComplete, currentPage, lastPage, perPage, totalRecord } = storeToRefs(store)
+    
+    const clickCallback = async (pageNum) => {
+        currentPage.value = pageNum
+        await handleSearch()
+    }
     const startingShowingRecord  = computed(
         () => {
             if(isApiCallComplete.value === true){
