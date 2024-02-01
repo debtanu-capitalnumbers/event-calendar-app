@@ -6,8 +6,8 @@
         <div>Loading</div>
     </div>
 </template>
-<style scoped>
-    .loading-box[data-v-db56ddf1] {
+<style>
+    .loading-box {
         position: fixed;
         width: 100%;
         height: 100%;

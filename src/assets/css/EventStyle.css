@@ -1,0 +1,92 @@
+div#description {
+    height: auto;
+}
+.invalid-feedback {
+    display: block;
+}
+.form-group.required .control-label:after {
+    content:"*";
+    color:red;
+}
+.image_info {
+    color: #dee2e6;
+}
+.justify-content-center {
+    justify-content: left!important;
+}
+.custom-file {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    margin-bottom: 0;
+}
+.custom-file-input {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    margin: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+.custom-file-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 1.4rem;
+    overflow: hidden;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+}
+.custom-file-label::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: block;
+    padding: 0.375rem 0.75rem;
+    color: #495057;
+    background-color: #68e1c5;
+    border-radius: 0 0.15rem 0.15rem 0;
+    content: "Browse";
+}
+.border-radius-0 {
+    border-radius: 0px;
+}
+.form-control.is-invalid, .was-validated .form-control:invalid, .form-select.is-invalid, .was-validated .form-select:invalid, .form-control.is-invalid input, .was-validated .form-control:invalid input {
+    border-color: #dc3545 !important;
+}
+.form-control.is-invalid>.ql-container, .was-validated .form-control:invalid>.ql-container {
+    border: 1px solid #dc3545 !important;
+} 
+/* .form-control.is-invalid.dp__theme_light, .was-validated .form-control:invalid.dp__theme_light {
+    background-position: right calc(2.375em + 0.1875rem) center;
+} */
+.dp__icon {
+    stroke: currentcolor;
+    fill: currentcolor;
+    inset-inline-end: 0 !important;
+    inset-inline: auto;
+    /* background-color: #efefef; */
+    /* padding: 10px; */
+    border-radius: 0px 3px 3px 0px;
+    margin-right: 1px;
+    /* border-left: 1px solid #ddd; */
+}
+.dp__pointer {
+    cursor: pointer;
+    padding-right: 36px;
+}
+input.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
+    background-color: unset;
+}
+span.custom-file-label.border-0.border-bottom.form-control.is-invalid {
+    background-size: calc(9.75em + 0.375rem) calc(0.75em + 0.375rem);
+}

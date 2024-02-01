@@ -93,98 +93,7 @@
     </div>
 </template>
 <style>
-    div#description {
-        height: auto;
-    }
-    .invalid-feedback {
-        display: block;
-    }
-    .form-group.required .control-label:after {
-        content:"*";
-        color:red;
-    }
-    .image_info {
-        color: #dee2e6;
-    }
-    .justify-content-center {
-        justify-content: left!important;
-    }
-    .custom-file {
-        position: relative;
-        display: inline-block;
-        width: 100%;
-        height: calc(1.5em + 0.75rem + 2px);
-        margin-bottom: 0;
-    }
-    .custom-file-input {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        height: calc(1.5em + 0.75rem + 2px);
-        margin: 0;
-        overflow: hidden;
-        opacity: 0;
-    }
-    .custom-file-label {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        z-index: 1;
-        height: calc(1.5em + 0.75rem + 2px);
-        padding: 0.375rem 1.4rem;
-        overflow: hidden;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #495057;
-        background-color: #fff;
-    }
-    .custom-file-label::after {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 3;
-        display: block;
-        padding: 0.375rem 0.75rem;
-        color: #495057;
-        background-color: #68e1c5;
-        border-radius: 0 0.15rem 0.15rem 0;
-        content: "Browse";
-    }
-    .border-radius-0 {
-        border-radius: 0px;
-    }
-    .form-control.is-invalid, .was-validated .form-control:invalid, .form-select.is-invalid, .was-validated .form-select:invalid, .form-control.is-invalid input, .was-validated .form-control:invalid input {
-        border-color: #dc3545 !important;
-    }
-    .form-control.is-invalid>.ql-container, .was-validated .form-control:invalid>.ql-container {
-        border: 1px solid #dc3545 !important;
-    } 
-    /* .form-control.is-invalid.dp__theme_light, .was-validated .form-control:invalid.dp__theme_light {
-        background-position: right calc(2.375em + 0.1875rem) center;
-    } */
-    .dp__icon {
-        stroke: currentcolor;
-        fill: currentcolor;
-        inset-inline-end: 0 !important;
-        inset-inline: auto;
-        /* background-color: #efefef; */
-        /* padding: 10px; */
-        border-radius: 0px 3px 3px 0px;
-        margin-right: 1px;
-        /* border-left: 1px solid #ddd; */
-    }
-    .dp__pointer {
-        cursor: pointer;
-        padding-right: 36px;
-    }
-    input.dp__pointer.dp__input_readonly.dp__input.dp__input_icon_pad.dp__input_reg {
-        background-color: unset;
-    }
-    span.custom-file-label.border-0.border-bottom.form-control.is-invalid {
-        background-size: calc(9.75em + 0.375rem) calc(0.75em + 0.375rem);
-    }
+    @import '../../assets/css/EventStyle.css';    
 </style>
 <script setup>
     import { onMounted, ref ,reactive, computed } from "vue";
@@ -194,11 +103,8 @@
     import Loader from '../../components/Loader.vue';
     import { VueEditor } from "vue3-editor";
     import imagedefaultUrl from '../../assets/image-placeholder.png';
-    import moment from 'moment';
-    import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
-    import { useVuelidate } from '@vuelidate/core'
-    import { required, helpers } from '@vuelidate/validators'
+    import { doValidation, doUpdatePhoto, setupFormdData } from '../../helper/EventHelper.js'    
 
     const store = useEventStore()
     const { handleShowEvent, handleUpdateEvent } = store
@@ -221,30 +127,6 @@
     })
     
     const form = reactive({ ... initialState });
-    const isValidDate = (value) => {                    
-        if(form.event_end_time.hours < form.event_start_time.hours) {              
-            return false;
-        } else if(form.event_end_time.hours === form.event_start_time.hours && form.event_end_time.minutes <= form.event_start_time.minutes) { 
-            return false;
-        } else {
-            return true;
-        }
-    }
-    const rules = computed(() => { 
-        return {
-            id: { required },
-            title: { required: helpers.withMessage('Title is required', required) },
-            description: { required: helpers.withMessage('Description is required', required) },
-            location: { required: helpers.withMessage('Location is required', required) },
-            event_category: { required: helpers.withMessage('Event category is required', required) },
-            event_start_date: { required: helpers.withMessage('Event start date is required', required) },
-            event_start_time: { required: helpers.withMessage('Event start time is required', required) },
-            event_end_time: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
-            cover_image: "",
-            download_path: "",
-        };      
-    });
-    const v$ = useVuelidate(rules, form);
 
     const titleLengthCount = computed(
         () => (form.title !== null) ? form.title.length : 0
@@ -281,39 +163,8 @@
         form.download_path = event.value.download_path;
     })
     
-    const updatePhoto = (files) => {
-        if (!files.length) {
-            imageData.value = form.cover_image = null
-            return
-        } {
-            const size = files[0].size
-            const type = files[0].type
-            
-            if(type !== "image/png" && type !== "image/jpg" && type !== "image/jpeg"){
-                errors.value.cover_image = ["Only support JPG/JPEG/PNG format."]
-                //cover_image.scrollIntoView({ behavior: 'smooth' });
-                return
-            }
-            if(size > (1024*1024*4)){
-                errors.value.cover_image = ["Maximum upload image size 4MB."]
-                
-                //cover_image.scrollIntoView({ behavior: 'smooth' });
-                return
-            }
-            
-            
-            const reader = new FileReader()
-            reader.readAsDataURL(files[0])
-            reader.onload = (event) => {
-                imageData.value = event.target.result
-            };
-            
-            // Store the file data
-            form.cover_image = {
-                name: files[0].name,
-                data: files[0]
-            };
-        }
+    const updatePhoto  = (files) => {
+        doUpdatePhoto(files, form, imageData)
     }
 
     const resetForm = () => {
@@ -321,51 +172,14 @@
         router.push({ name: 'events' });
     }
     const validateData = async (field) => {
-        errors.value = {};
-        let errorCount = 0;
-        let notifyError = '';
-        let result = true;
-        if(field !== 'value'){
-            result = await v$.value[field].$validate();
-        } else {
-            result = await v$.value.$validate();
-        }
-        v$.value.$errors.forEach((element, index) => {
-            if(index == 0){
-                notifyError = element.$message;
-            }
-            errors.value[element.$property] = [element.$message];
-            errorCount++;
-        });
-        
-        if(errorCount >= 2){
-            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
-        }
-        if(notifyError !== ""){
-            notify({
-                title: notifyError,
-                type: 'error',
-            });
-        }
+        const { result } = await doValidation(form, field, errors)
         return result;
     }
 
     const handleSubmit = async () => {
         const result = await validateData('value');
         if( result ){ 
-            form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
-            form.event_start_time = moment(form.event_start_time).format("hh:mm") + ':00'
-            form.event_end_time = moment(form.event_end_time).format("hh:mm") + ':00' 
-
-            let formData = new FormData();
-            formData.append('title', form.title);
-            formData.append('description', form.description);
-            formData.append('location', form.location);
-            formData.append('event_category', form.event_category);
-            formData.append('event_start_date', form.event_start_date);
-            formData.append('event_start_time', form.event_start_time);
-            formData.append('event_end_time', form.event_end_time);
-            if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
+            const formData = await setupFormdData(form) 
             await handleUpdateEvent(form.id, formData)      
             if(status.value === 200 || status.value === 201){                
                 router.push({ name: 'events' })
