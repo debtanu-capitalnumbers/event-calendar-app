@@ -2,11 +2,11 @@ import { ref, computed } from 'vue'
 import { notify } from "@kyvg/vue3-notification";
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, helpers } from '@vuelidate/validators';
+import moment from 'moment'
 
 const current_form = ref({});
 
 const isValidDate = (value) => {   
-    console.log(current_form.value.event_start_time);   
     if(current_form.value.event_start_time.length <= 0 || current_form.value.event_end_time.length <= 0){ 
         return false;
     } else if(current_form.value.event_end_time.hours < current_form.value.event_start_time.hours) {              
@@ -101,7 +101,7 @@ async function setupFormdData (form)  {
     form.event_start_time = moment(form.event_start_time).format("hh:mm") + ':00'
     form.event_end_time = moment(form.event_end_time).format("hh:mm") + ':00' 
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('title', form.title);
     formData.append('description', form.description);
     formData.append('location', form.location);
