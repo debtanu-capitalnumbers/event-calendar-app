@@ -16,7 +16,7 @@ import Loader from '../../components/Loader.vue';
 
 const store = useEventStore()
 const { fetchAllEvents } = store
-const { events, sortType, perPage, currentPage, orderColumn, filterName, isShowLoader } = storeToRefs(store)
+const { events, isShowLoader } = storeToRefs(store)
 
 onMounted(async () => {
     await fetchAllEvents('fresh')

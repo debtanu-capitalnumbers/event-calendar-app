@@ -58,18 +58,19 @@ const exportRules = computed(() => {
 });
 
 async function doValidation (form, field, errors, type)  {
-    current_form.value = form
-    if(type === 'create' || type === 'edit'){
-        const v$ = useVuelidate(createEditRules, form);
-    } else if(type === 'export'){
-        const v$ = useVuelidate(exportRules, form);
-    } else if(type === 'import'){
-        const v$ = useVuelidate(importRules, form);
-    }
     errors.value = {};
     let errorCount = 0;
     let notifyError = '';
     let result = true;
+    let v$ = '';
+    current_form.value = form
+    if(type === 'create' || type === 'edit'){
+        v$ = useVuelidate(createEditRules, form);
+    } else if(type === 'export'){
+        v$ = useVuelidate(exportRules, form);
+    } else if(type === 'import'){
+        v$ = useVuelidate(importRules, form);
+    }
     if(field !== 'value'){
         result = await v$.value[field].$validate();
     } else {

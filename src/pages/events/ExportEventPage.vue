@@ -59,10 +59,9 @@
 
     const store = useEventStore()
     const { handleExportEvent } = store
-    const { status, isSuccess, isShowLoader, eventFile } = storeToRefs(store)
+    const { isSuccess, isShowLoader, eventFile } = storeToRefs(store)
     const errors = ref({})
     const router = useRouter()
-    const imageData = ref(null)
     
     const initialState = defineProps({
         export_type: {
