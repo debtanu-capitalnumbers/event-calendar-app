@@ -59,6 +59,7 @@
     import VueDatePicker from '@vuepic/vue-datepicker';
     import { useVuelidate } from '@vuelidate/core';
     import { required, helpers } from '@vuelidate/validators';
+    import { doValidation, setupFormdData } from '../../helper/EventHelper.js';   
 
     const store = useEventStore()
     const { handleExportEvent } = store
@@ -107,48 +108,17 @@
     const resetForm = () => {
         Object.assign(form, initialState);
         router.push({ name: 'events' });
-    }
+    }    
     
     const validateData = async (field) => {
-        errors.value = {};
-        let errorCount = 0;
-        let notifyError = '';
-        let result = true;
-        if(field !== 'value'){
-            result = await v$.value[field].$validate();
-        } else {
-            result = await v$.value.$validate();
-        }
-        v$.value.$errors.forEach((element, index) => {
-            if(index == 0){
-                notifyError = element.$message;
-            }
-            errors.value[element.$property] = [element.$message];
-            errorCount++;
-        });
-        
-        if(errorCount >= 2){
-            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
-        }
-        if(notifyError !== ""){
-            notify({
-                title: notifyError,
-                type: 'error',
-            });
-        }
+        const result = await doValidation(form, field, errors)
         return result;
     }
 
     const handleSubmit = async () => {
         const result = await validateData('value');
         if( result ){  
-            form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
-            form.event_end_date = moment(form.event_end_date).format("YYYY-MM-DD")
-
-            let formData = new FormData();
-            formData.append('export_type', form.export_type);
-            formData.append('event_start_date', form.event_start_date);
-            formData.append('event_end_date', form.event_end_date);
+            const formData = await setupFormdData(form, 'export')
             await handleExportEvent(formData)  
             if(isSuccess.value){
                 window.location.href = eventFile.value;

@@ -211,9 +211,7 @@
     const handleSubmit = async () => {
         const result = await validateData('value');
         if( result ){  
-            let formData = new FormData();
-            formData.append('import_type', form.import_type);
-            if(form.import_file.data && form.import_file.name) { formData.append('import_file', form.import_file.data, form.import_file.name); }
+            const formData = await setupFormdData(form, 'import')
             await handleImportEvent(formData) 
         }
     }

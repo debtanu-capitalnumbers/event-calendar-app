@@ -96,20 +96,32 @@ async function doValidation (form, field, errors)  {
     return result;
 }
 
-async function setupFormdData (form)  {
-    form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
-    form.event_start_time = moment(form.event_start_time).format("hh:mm") + ':00'
-    form.event_end_time = moment(form.event_end_time).format("hh:mm") + ':00' 
-
+async function setupFormdData (form, type)  {
     const formData = new FormData();
-    formData.append('title', form.title);
-    formData.append('description', form.description);
-    formData.append('location', form.location);
-    formData.append('event_category', form.event_category);
-    formData.append('event_start_date', form.event_start_date);
-    formData.append('event_start_time', form.event_start_time);
-    formData.append('event_end_time', form.event_end_time);
-    if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
+    if(type === 'create' || type === 'edit'){
+        form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
+        form.event_start_time = moment(form.event_start_time).format("hh:mm") + ':00'
+        form.event_end_time = moment(form.event_end_time).format("hh:mm") + ':00' 
+    
+        formData.append('title', form.title);
+        formData.append('description', form.description);
+        formData.append('location', form.location);
+        formData.append('event_category', form.event_category);
+        formData.append('event_start_date', form.event_start_date);
+        formData.append('event_start_time', form.event_start_time);
+        formData.append('event_end_time', form.event_end_time);
+        if(form.cover_image.data && form.cover_image.name) { formData.append('cover_image', form.cover_image.data, form.cover_image.name); }
+    } else if(type === 'export'){
+        form.event_start_date = moment(form.event_start_date).format("YYYY-MM-DD")
+        form.event_end_date = moment(form.event_end_date).format("YYYY-MM-DD")
+
+        formData.append('export_type', form.export_type);
+        formData.append('event_start_date', form.event_start_date);
+        formData.append('event_end_date', form.event_end_date);
+    } else if(type === 'import'){
+        formData.append('import_type', form.import_type);
+        if(form.import_file.data && form.import_file.name) { formData.append('import_file', form.import_file.data, form.import_file.name); }
+    }
     return formData;
 }
 

@@ -39,7 +39,7 @@
     import EventStartDate from '../../components/events/inputs/EventStartDate.vue';
     import EventStartTime from '../../components/events/inputs/EventStartTime.vue';
     import EventEndTime from '../../components/events/inputs/EventEndTime.vue';
-    import { doValidation, setupFormdData } from '../../helper/EventHelper.js'    
+    import { doValidation, setupFormdData } from '../../helper/EventHelper.js';    
 
     const store = useEventStore()
     const { handleShowEvent, handleUpdateEvent } = store
@@ -95,7 +95,7 @@
     const handleSubmit = async () => {
         const result = await validateData('value');
         if( result ){ 
-            const formData = await setupFormdData(form) 
+            const formData = await setupFormdData(form, 'edit') 
             await handleUpdateEvent(form.id, formData)      
             if(status.value === 200 || status.value === 201){                
                 router.push({ name: 'events' })
