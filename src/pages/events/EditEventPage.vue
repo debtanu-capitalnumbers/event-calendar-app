@@ -39,7 +39,7 @@
     import EventStartDate from '../../components/events/inputs/EventStartDate.vue';
     import EventStartTime from '../../components/events/inputs/EventStartTime.vue';
     import EventEndTime from '../../components/events/inputs/EventEndTime.vue';
-    import { doValidation, doUpdatePhoto, setupFormdData } from '../../helper/EventHelper.js'    
+    import { doValidation, setupFormdData } from '../../helper/EventHelper.js'    
 
     const store = useEventStore()
     const { handleShowEvent, handleUpdateEvent } = store
@@ -82,17 +82,13 @@
         form.event_end_time.seconds = event.value.event_end_time_seconds;
         form.download_path = event.value.download_path;
     })
-    
-    const updatePhoto  = (files) => {
-        doUpdatePhoto(files, form, imageData)
-    }
 
     const resetForm = () => {
         Object.assign(form, initialState);
         router.push({ name: 'events' });
     }
     const validateData = async (field) => {
-        const { result } = await doValidation(form, field, errors)
+        const result = await doValidation(form, field, errors)
         return result;
     }
 
