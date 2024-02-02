@@ -55,7 +55,7 @@ const exportRules = computed(() => {
     return {
         export_type: { required: helpers.withMessage('Event export type is required', required) },
         event_start_date: { required: helpers.withMessage('Event start date is required', required) },
-        event_end_date: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
+        event_end_date: { required: helpers.withMessage('Event end date is required', required), isValidDate: helpers.withMessage('The event end date must be greater than start date', isValidDate) },
     };      
 });
 
