@@ -15,71 +15,7 @@
     </div>
 </template>
 <style>
-    .invalid-feedback {
-        display: block;
-    }
-    .form-group.required .control-label:after {
-        content:"*";
-        color:red;
-    }
-    .image_info {
-        color: #dee2e6;
-    }
-    .justify-content-center {
-        justify-content: left!important;
-    }
-    .custom-file {
-        position: relative;
-        display: inline-block;
-        width: 100%;
-        height: calc(1.5em + 0.75rem + 2px);
-        margin-bottom: 0;
-    }
-    .custom-file-input {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        height: calc(1.5em + 0.75rem + 2px);
-        margin: 0;
-        overflow: hidden;
-        opacity: 0;
-    }
-    .custom-file-label {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        z-index: 1;
-        height: calc(1.5em + 0.75rem + 2px);
-        padding: 0.375rem 1.4rem;
-        overflow: hidden;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #495057;
-        background-color: #fff;
-    }
-    .custom-file-label::after {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 3;
-        display: block;
-        padding: 0.375rem 0.75rem;
-        color: #495057;
-        background-color: #68e1c5;
-        border-radius: 0 0.15rem 0.15rem 0;
-        content: "Browse";
-    }
-    .border-radius-0 {
-        border-radius: 0px;
-    }
-    .form-control.is-invalid, .was-validated .form-control:invalid, .form-select.is-invalid, .was-validated .form-select:invalid, .form-control.is-invalid input, .was-validated .form-control:invalid input {
-        border-color: #dc3545 !important;
-    }
-    span.custom-file-label.border-0.border-bottom.form-control.is-invalid {
-        background-size: calc(9.75em + 0.375rem) calc(0.75em + 0.375rem);
-    }
+    @import '../../assets/css/EventStyle.css'; 
 </style>
 <script setup>
     import { onMounted, ref ,reactive } from "vue";

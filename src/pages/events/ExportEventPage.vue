@@ -9,7 +9,6 @@
                 <EventExportType :form="form" :errors="errors"/>
                 <EventStartDate :form="form" :errors="errors" @doingValidation="validateData"/>
                 <EventEndDate :form="form" :errors="errors" @doingValidation="validateData"/>
-                <EventEndDate :form="form" :errors="errors" @doingValidation="validateData"/>
                 <EventSubmitButton />
                 <EventResetButton  @doingResetForm="resetFormData"/>                
             </form>
@@ -17,16 +16,7 @@
     </div>
 </template>
 <style>
-    .form-group.required .control-label:after {
-        content:"*";
-        color:red;
-    }
-    .border-radius-0 {
-        border-radius: 0px;
-    }
-    .form-control.is-invalid, .was-validated .form-control:invalid, .form-select.is-invalid, .was-validated .form-select:invalid, .form-control.is-invalid input, .was-validated .form-control:invalid input {
-        border-color: #dc3545 !important;
-    }
+    @import '../../assets/css/EventStyle.css'; 
 </style>
 <script setup>
     import { onMounted, ref ,reactive } from "vue";

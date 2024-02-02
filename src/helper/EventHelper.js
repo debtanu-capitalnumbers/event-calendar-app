@@ -183,7 +183,7 @@ async function setupFormdData (form, type)  {
     return formData;
 }
 
-async function doValidation (form, initialState)  {
+async function doResetFormData (form, initialState)  {
     Object.assign(form, initialState);
     router.push({ name: 'events' });
 }
@@ -192,5 +192,6 @@ export {
     doUpdatePhoto,
     doUpdateImportFile,
     doValidation,
+    doResetFormData,
     setupFormdData,
 }

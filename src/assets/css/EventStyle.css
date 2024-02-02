@@ -1,3 +1,5 @@
+/* Create or Edit event page */
+
 div#description {
     height: auto;
 }
@@ -66,19 +68,13 @@ div#description {
 .form-control.is-invalid>.ql-container, .was-validated .form-control:invalid>.ql-container {
     border: 1px solid #dc3545 !important;
 } 
-/* .form-control.is-invalid.dp__theme_light, .was-validated .form-control:invalid.dp__theme_light {
-    background-position: right calc(2.375em + 0.1875rem) center;
-} */
 .dp__icon {
     stroke: currentcolor;
     fill: currentcolor;
     inset-inline-end: 0 !important;
     inset-inline: auto;
-    /* background-color: #efefef; */
-    /* padding: 10px; */
     border-radius: 0px 3px 3px 0px;
     margin-right: 1px;
-    /* border-left: 1px solid #ddd; */
 }
 .dp__pointer {
     cursor: pointer;
