@@ -2,6 +2,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { allEvents, allCalendarEvents, activeEvent, removeEvent, createEvent, updateEvent, showEvent, exportEvent, importEvent } from "../http/event-api";
 import { notify } from "@kyvg/vue3-notification";
+import { useRouter } from "vue-router";
 
 export const useEventStore = defineStore("eventStore", () => {
   const events = ref([])
@@ -23,6 +24,7 @@ export const useEventStore = defineStore("eventStore", () => {
   const isApiCallComplete = ref(false)
   const isShowLoader = ref(false)
   const status = ref(200);
+  const router = useRouter();
 
   const isSuccess = computed(
     () => (status.value >= 200 && status.value < 300) ? true : false
@@ -83,6 +85,9 @@ export const useEventStore = defineStore("eventStore", () => {
     try {
       await createEvent(form).then((response) => {
         status.value = response.status;  
+        if(status.value === 200 || status.value === 201){                
+            router.push({ name: 'events' })
+        }
       });
     } catch (error) {
       status.value = error.response.status
@@ -95,7 +100,10 @@ export const useEventStore = defineStore("eventStore", () => {
     initValue()
     try {
       await updateEvent(id, form).then((response) => {
-        status.value = response.status;  
+        status.value = response.status;
+        if(status.value === 200 || status.value === 201){                
+            router.push({ name: 'events' })
+        }  
       });
     } catch (error) {
       status.value = error.response.status

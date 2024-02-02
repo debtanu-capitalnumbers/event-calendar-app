@@ -22,17 +22,10 @@
     const store = useEventStore()
     const { fetchCalendarEvents } = store
     const { calendarEvents, isShowLoader } = storeToRefs(store)
-
-    const handleDateClick = async () => {
-        console.log('handleDateClick');
-    }
-
-
     const calendarOptions = reactive({
         plugins: [ dayGridPlugin, interactionPlugin ],
         height:1000,
         initialView: "dayGridMonth",
-        // dateClick: handleDateClick,
         events: [],
         headerToolbar: { right: 'dayGridMonth,dayGridWeek,dayGridDay', center: 'title',left: 'prev next today', },
     }) 

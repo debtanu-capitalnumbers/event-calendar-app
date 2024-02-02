@@ -6,32 +6,10 @@
         </div>
         <div class="p-3 border">
             <form @submit.prevent="handleSubmit">
-                <div class="row p-3 col-md-10 form-group required">
-                    <span for="import_type" class="control-label">Import Type</span>
-                    <select ref="import_type" class="form-select border-0 border-bottom border-radius-0" :class="{ 'is-invalid': errors.import_type && errors.import_type[0] }" aria-label="Default select example" name="import_type" id="import_type" v-model="form.import_type">
-                        <option value="csv">CSV</option>
-                        <option value="ics">ICS</option>
-                    </select>
-                    <div class="invalid-feedback" v-if="errors.import_type && errors.import_type[0]">
-                        {{ errors.import_type && errors.import_type[0] }}
-                    </div>
-                </div>
-                <div class="row p-3 col-md-10 form-group">
-                    <span for="import_file" class="control-label">Import File</span>
-                    <div class="custom-file">
-                        <input ref="import_file" type="file" class="custom-file-input" name="import_file" id="import_file" @change="$event => updatePhoto($event.target.files)">
-                        <span class="custom-file-label border-0 border-bottom form-control" for="import_file" :class="{ 'is-invalid': errors.import_file && errors.import_file[0] }">{{ computedinputFileLabel }}</span>
-                    </div>
-
-                    <div class="col-md-12">
-                        <span class="float-start image_info">Maximum upload image size 4MB. Only support ICS/CSV format.</span>
-                    </div>
-                    <div class="invalid-feedback" v-if="errors.import_file && errors.import_file[0]">
-                        {{ errors.import_file && errors.import_file[0] }}
-                    </div>
-                </div>                
-                <button class="w-10 btn btn-warning m-1" type="submit">Submit</button>
-                <button class="w-10 btn btn-secondary m-1"  @click.prevent="resetForm">back</button>
+                <EventImportType :form="form" :errors="errors"/>              
+                <EventImportFile :form="form" :errors="errors" @doingValidation="validateData"/>
+                <EventSubmitButton />
+                <EventResetButton  @doingResetForm="resetFormData"/>
             </form>
         </div>
     </div>
@@ -104,18 +82,20 @@
     }
 </style>
 <script setup>
-    import { onMounted, ref ,reactive, computed } from "vue";
+    import { onMounted, ref ,reactive } from "vue";
     import { storeToRefs } from "pinia";
-    import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
-    import { doValidation, doUpdateExportFile, setupFormdData } from '../../helper/EventHelper.js'; 
+    import EventImportType from '../../components/events/inputs/EventImportType.vue';  
+    import EventImportFile from '../../components/events/inputs/EventImportFile.vue';  
+    import EventSubmitButton from '../../components/events/inputs/EventSubmitButton.vue';  
+    import EventResetButton from '../../components/events/inputs/EventResetButton.vue'; 
+    import { doResetFormData, doValidation, setupFormdData } from '../../helper/EventHelper.js'; 
 
     const store = useEventStore()
     const { handleImportEvent } = store
     const { isShowLoader } = storeToRefs(store)
     const errors = ref({})
-    const router = useRouter()
     
     const initialState = defineProps({
         import_type: {
@@ -131,24 +111,15 @@
     onMounted(async () => {
         errors.value = {};
     })
-    const form = reactive({ ... initialState });  
-    
-    const computedinputFileLabel = computed(
-        () => (form.import_file !== null) ? form.import_file.name : "Choose file"
-    )
-
-    const updatePhoto  = (files) => {
-        doUpdateExportFile(files, props.form)
-    } 
+    const form = reactive({ ... initialState });
     
     const validateData = async (field) => {
         const result = await doValidation(form, field, errors, 'import')
         return result;
     }
 
-    const resetForm = () => {
-        // Object.assign(form, initialState);
-        router.push({ name: 'events' });
+    const resetFormData = async () => {
+        await doResetFormData(form, initialState)
     }
 
     const handleSubmit = async () => {

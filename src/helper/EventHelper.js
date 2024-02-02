@@ -2,8 +2,10 @@ import { ref, computed } from 'vue'
 import { notify } from "@kyvg/vue3-notification";
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, helpers } from '@vuelidate/validators';
-import moment from 'moment'
+import moment from 'moment';
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const current_form = ref({});
 
 const isValidDateTime = (value) => {   
@@ -128,7 +130,7 @@ function doUpdatePhoto (files, form, imageData)  {
     }
 }
 
-function doUpdateExportFile (files, form)  {
+function doUpdateImportFile (files, form)  {
     if (!files.length) {
         return
     } {
@@ -181,9 +183,14 @@ async function setupFormdData (form, type)  {
     return formData;
 }
 
+async function doValidation (form, initialState)  {
+    Object.assign(form, initialState);
+    router.push({ name: 'events' });
+}
+
 export {
     doUpdatePhoto,
-    doUpdateExportFile,
+    doUpdateImportFile,
     doValidation,
     setupFormdData,
 }
