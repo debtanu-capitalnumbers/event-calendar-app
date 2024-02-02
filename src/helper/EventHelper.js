@@ -6,7 +6,7 @@ import moment from 'moment'
 
 const current_form = ref({});
 
-const isValidDate = (value) => {   
+const isValidDateTime = (value) => {   
     if(current_form.value.event_start_time.length <= 0 || current_form.value.event_end_time.length <= 0){ 
         return false;
     } else if(current_form.value.event_end_time.hours < current_form.value.event_start_time.hours) {              
@@ -18,7 +18,17 @@ const isValidDate = (value) => {
     }
 }
 
-const rules = computed(() => { 
+const isValidDate = (value) => {          
+    const event_start_date = moment(current_form.event_start_date);
+    const event_end_date = moment(current_form.event_end_date);          
+    if(event_end_date <= event_start_date) {              
+        return false;
+    } else {
+        return true;
+    }
+}
+
+const createEditRules = computed(() => { 
     return {
         title: { required: helpers.withMessage('Title is required', required), minLength: helpers.withMessage(`Title must be atleast 2 character long`, minLength(2)) },
         description: { required: helpers.withMessage('Description is required', required) },
@@ -26,11 +36,64 @@ const rules = computed(() => {
         event_category: { required: helpers.withMessage('Event category is required', required) },
         event_start_date: { required: helpers.withMessage('Event start date is required', required) },
         event_start_time: { required: helpers.withMessage('Event start time is required', required) },
-        event_end_time: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
+        event_end_time: { required: helpers.withMessage('Event end time is required', required), isValidDateTime: helpers.withMessage('The event end time must be greater than start time', isValidDateTime) },
         cover_image: "",
         download_path: "",
     };      
 });
+
+const importRules = computed(() => { 
+    return {
+        import_type: { required: helpers.withMessage('Event Import type is required', required) },
+        import_file: { required: helpers.withMessage('Event import file is required', required) },
+    };      
+});
+
+const exportRules = computed(() => { 
+    return {
+        export_type: { required: helpers.withMessage('Event export type is required', required) },
+        event_start_date: { required: helpers.withMessage('Event start date is required', required) },
+        event_end_date: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
+    };      
+});
+
+async function doValidation (form, field, errors, type)  {
+    current_form.value = form
+    if(type === 'create' || type === 'edit'){
+        const v$ = useVuelidate(createEditRules, form);
+    } else if(type === 'export'){
+        const v$ = useVuelidate(exportRules, form);
+    } else if(type === 'import'){
+        const v$ = useVuelidate(importRules, form);
+    }
+    errors.value = {};
+    let errorCount = 0;
+    let notifyError = '';
+    let result = true;
+    if(field !== 'value'){
+        result = await v$.value[field].$validate();
+    } else {
+        result = await v$.value.$validate();
+    }
+    v$.value.$errors.forEach((element, index) => {
+        if(index == 0){
+            notifyError = element.$message;
+        }
+        errors.value[element.$property] = [element.$message];
+        errorCount++;
+    });
+    
+    if(errorCount >= 2 && field === 'value'){
+        notifyError += ' (and ' + (-- errorCount) + ' more errors)';
+        if(notifyError !== ""){
+            notify({
+                title: notifyError,
+                type: 'error',
+            });
+        }
+    }
+    return result;
+}
 
 function doUpdatePhoto (files, form, imageData)  {
     if (!files.length) {
@@ -64,36 +127,28 @@ function doUpdatePhoto (files, form, imageData)  {
     }
 }
 
-async function doValidation (form, field, errors)  {
-    current_form.value = form
-    const v$ = useVuelidate(rules, form);
-    errors.value = {};
-    let errorCount = 0;
-    let notifyError = '';
-    let result = true;
-    if(field !== 'value'){
-        result = await v$.value[field].$validate();
-    } else {
-        result = await v$.value.$validate();
-    }
-    v$.value.$errors.forEach((element, index) => {
-        if(index == 0){
-            notifyError = element.$message;
+function doUpdateExportFile (files, form)  {
+    if (!files.length) {
+        return
+    } {
+        const size = files[0].size
+        const type = files[0].type
+        
+        if(type !== "text/calendar" && type !== "text/csv"){
+            errors.value.import_file = ["Only support ICS/CSV format."]
+            return
         }
-        errors.value[element.$property] = [element.$message];
-        errorCount++;
-    });
-    
-    if(errorCount >= 2 && field === 'value'){
-        notifyError += ' (and ' + (-- errorCount) + ' more errors)';
-        if(notifyError !== ""){
-            notify({
-                title: notifyError,
-                type: 'error',
-            });
+        if(size > (1024*1024*4)){
+            errors.value.import_file = ["Maximum upload file size 4MB."]
+            return
         }
+        
+        // Store the file data
+        form.import_file = {
+            name: files[0].name,
+            data: files[0]
+        };            
     }
-    return result;
 }
 
 async function setupFormdData (form, type)  {
@@ -127,6 +182,7 @@ async function setupFormdData (form, type)  {
 
 export {
     doUpdatePhoto,
+    doUpdateExportFile,
     doValidation,
     setupFormdData,
 }

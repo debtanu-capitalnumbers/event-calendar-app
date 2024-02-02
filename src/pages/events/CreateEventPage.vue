@@ -24,7 +24,7 @@
     @import '../../assets/css/EventStyle.css';    
 </style>
 <script setup>
-    import { onMounted, ref ,reactive, computed } from "vue";
+    import { onMounted, ref ,reactive } from "vue";
     import { storeToRefs } from "pinia";
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
@@ -69,7 +69,7 @@
     }
 
     const validateData = async (field) => {
-        const result = await doValidation(form, field, errors)
+        const result = await doValidation(form, field, errors, 'create')
         return result;
     }
 

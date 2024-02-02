@@ -49,16 +49,12 @@
     }
 </style>
 <script setup>
-    import { onMounted, ref ,reactive, computed } from "vue";
+    import { onMounted, ref ,reactive } from "vue";
     import { storeToRefs } from "pinia";
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
-    import moment from 'moment';
-    import { notify } from "@kyvg/vue3-notification";
     import VueDatePicker from '@vuepic/vue-datepicker';
-    import { useVuelidate } from '@vuelidate/core';
-    import { required, helpers } from '@vuelidate/validators';
     import { doValidation, setupFormdData } from '../../helper/EventHelper.js';   
 
     const store = useEventStore()
@@ -87,31 +83,14 @@
         errors.value = {};
     })
     const form = reactive({ ... initialState });  
-    const isValidDate = (value) => {          
-        const event_start_date = moment(form.event_start_date);
-        const event_end_date = moment(form.event_end_date);          
-        if(event_end_date <= event_start_date) {              
-            return false;
-        } else {
-            return true;
-        }
-    }
-    const rules = computed(() => { 
-        return {
-            export_type: { required: helpers.withMessage('Event export type is required', required) },
-            event_start_date: { required: helpers.withMessage('Event start date is required', required) },
-            event_end_date: { required: helpers.withMessage('Event end time is required', required), isValidDate: helpers.withMessage('The event end time must be greater than start time', isValidDate) },
-        };      
-    });
-    const v$ = useVuelidate(rules, form);
-
+    
     const resetForm = () => {
         Object.assign(form, initialState);
         router.push({ name: 'events' });
     }    
     
     const validateData = async (field) => {
-        const result = await doValidation(form, field, errors)
+        const result = await doValidation(form, field, errors, 'export')
         return result;
     }
 

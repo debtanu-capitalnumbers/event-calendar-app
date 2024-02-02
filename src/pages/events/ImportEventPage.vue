@@ -109,16 +109,13 @@
     import { useRouter } from "vue-router";
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
-    import { notify } from "@kyvg/vue3-notification";
-    import { useVuelidate } from '@vuelidate/core';
-    import { required, helpers } from '@vuelidate/validators';
+    import { doValidation, doUpdateExportFile, setupFormdData } from '../../helper/EventHelper.js'; 
 
     const store = useEventStore()
     const { handleImportEvent } = store
-    const { status, isShowLoader, isSuccess } = storeToRefs(store)
+    const { isShowLoader } = storeToRefs(store)
     const errors = ref({})
     const router = useRouter()
-    const imageData = ref(null)
     
     const initialState = defineProps({
         import_type: {
@@ -135,71 +132,17 @@
         errors.value = {};
     })
     const form = reactive({ ... initialState });  
-    const rules = computed(() => { 
-        return {
-            import_type: { required: helpers.withMessage('Event Import type is required', required) },
-            import_file: { required: helpers.withMessage('Event import file is required', required) },
-        };      
-    });
-    const v$ = useVuelidate(rules, form);
-
+    
     const computedinputFileLabel = computed(
         () => (form.import_file !== null) ? form.import_file.name : "Choose file"
     )
-    
-    const updatePhoto = (files) => {
-        console.log('here')
-        if (!files.length) {
-            imageData.value = form.import_file = null
-            return
-        } {
-            const size = files[0].size
-            const type = files[0].type
-            
-            if(type !== "text/calendar" && type !== "text/csv"){
-                errors.value.import_file = ["Only support ICS/CSV format."]
-                return
-            }
-            if(size > (1024*1024*4)){
-                errors.value.import_file = ["Maximum upload file size 4MB."]
-                return
-            }
-            
-            // Store the file data
-            form.import_file = {
-                name: files[0].name,
-                data: files[0]
-            };            
-        }
-    }
+
+    const updatePhoto  = (files) => {
+        doUpdateExportFile(files, props.form)
+    } 
     
     const validateData = async (field) => {
-        errors.value = {};
-        let errorCount = 0;
-        let notifyError = '';
-        let result = true;
-        if(field !== 'value'){
-            result = await v$.value[field].$validate();
-        } else {
-            result = await v$.value.$validate();
-        }
-        v$.value.$errors.forEach((element, index) => {
-            if(index == 0){
-                notifyError = element.$message;
-            }
-            errors.value[element.$property] = [element.$message];
-            errorCount++;
-        });
-        
-        if(errorCount >= 2){
-            notifyError += ' (and ' + (-- errorCount) + ' more errors)';
-        }
-        if(notifyError !== ""){
-            notify({
-                title: notifyError,
-                type: 'error',
-            });
-        }
+        const result = await doValidation(form, field, errors, 'import')
         return result;
     }
 

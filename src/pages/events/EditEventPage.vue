@@ -88,7 +88,7 @@
         router.push({ name: 'events' });
     }
     const validateData = async (field) => {
-        const result = await doValidation(form, field, errors)
+        const result = await doValidation(form, field, errors, 'edit')
         return result;
     }
 

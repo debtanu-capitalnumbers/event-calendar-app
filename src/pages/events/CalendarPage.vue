@@ -15,7 +15,6 @@
     import { storeToRefs } from 'pinia';
     import { useEventStore } from "../../stores/event";
     import Loader from '../../components/Loader.vue';
-    import { notify } from "@kyvg/vue3-notification";
     import FullCalendar from '@fullcalendar/vue3';
     import dayGridPlugin from '@fullcalendar/daygrid';
     import interactionPlugin from '@fullcalendar/interaction';
